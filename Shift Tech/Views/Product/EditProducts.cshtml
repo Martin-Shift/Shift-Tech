@@ -1,0 +1,85 @@
+﻿@using System.Linq;
+@using Shift_Tech.DbModels
+@using System.ComponentModel.DataAnnotations.Schema;
+@{
+    ViewData["Title"] = "Manage Products";
+}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css">
+
+<div class="container">
+    <h1>Manage Products</h1>
+
+    <!-- Loop through the products -->
+    @foreach (Product product in Model.Products)
+    {
+        var image = product.MainImage;
+        <div class="card mb-4">
+            <img src="@image?.Url()" class="card-img-top" alt="Product Image">
+            <div class="card-body">
+                <h5 class="card-title">@product.Name</h5>
+                <p class="card-text">Price: $@product.Price</p>
+                <a href="@Url.Action("EditProductDetail", "Product", new { productId = product.Id })" class="btn btn-primary">Edit</a>
+            </div>
+        </div>
+
+    }
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Add New Product</h5>
+            <form method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="NewProductName">Name</label>
+                    <input type="text" class="form-control" id="NewProductName" name="NewProductName" placeholder="Enter Product Name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="NewProductPrice">Price</label>
+                    <input type="number" class="form-control" id="NewProductPrice" name="NewProductPrice" placeholder="Enter Product Price" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="Category">Category</label>
+                    <select id="NewProductCategory" class="form-control" id="Category" name="Category">
+                        @foreach (var category in Model.Categories)
+                        {
+                            <option value="@category.Id">@category.Name</option>
+                        }
+                    </select>
+                </div>
+                <button type="submit" onclick="addProduct()">Add Product</button>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function addProduct() {
+        // Gather data from the form fields
+        const productName = document.getElementById("NewProductName").value;
+        const productPrice = parseFloat(document.getElementById("NewProductPrice").value);
+        const categoryId = parseInt(document.getElementById("NewProductCategory").value);
+        fetch("/Product/AddProduct", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                name: productName,
+                price: productPrice,
+                categoryId: categoryId
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message == "Success!") {
+                    window.location.href = "/Products/EditProducts"; 
+                } else {
+                    alert("Failed to add product. Please try again.");
+                }
+            })
+            .catch(error => {
+                alert("Error: " + error.message);
+            });
+    }
+</script>
