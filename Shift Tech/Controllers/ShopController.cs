@@ -82,6 +82,7 @@ namespace Shift_Tech.Controllers
             return products.OrderBy(product => product.CategoryId)
                                 .Select(product => product.Category)
                                 .Distinct()
+                                 .Take(6)
                                  .ToList();
         }
         public List<Product> FilterProducts(ShopFilter filter, List<Product> products)
@@ -101,13 +102,35 @@ namespace Shift_Tech.Controllers
         {
             return View(new ProductListViewModel() { Products = GetProducts(), Categories = GetShopListCategories(GetProducts()), Filter = CreateShopFilter(GetProducts()) });
         }
+        [HttpGet]
+        public IActionResult ProductDetail(int id)
+        {
+            var product = _context.Products.Find(id);
 
+            if (product == null)
+            {
+                return NotFound(); 
+            }
+            return RedirectToAction("ShowProductDetail", new { productId = id });
+        }
+        [HttpGet("Shop/ProductDetail/{productId}")]
+        public IActionResult ShowProductDetail(int productId)
+        {
+            var product = _context.Products.Find(productId);
+
+            if (product == null)
+            {
+                return NotFound(); 
+            }
+
+            return View("ProductDetail", product); 
+        }
         public async Task<IActionResult> ProductList(ProductListViewModel model)
         {
             model.Products = FilterProducts(model.Filter, GetProducts());
             model.Filter.CurrentPage = 1;
             model.Filter.PageCount = GetPageCount(model.Products);
-            model.Categories = GetShopListCategories(model.Products); 
+            model.Categories = GetShopListCategories(model.Products);
             return View(model);
         }
         public async Task<IActionResult> ProductList(ProductListViewModel model, int page)
@@ -127,7 +150,7 @@ namespace Shift_Tech.Controllers
                     model.Products = model.Products.OrderByDescending(x => x.Date).ToList();
                     break;
                 case SortOption.CheapestToExpensive:
-                    model.Products = model.Products.OrderBy(x=> x.Price).ToList();
+                    model.Products = model.Products.OrderBy(x => x.Price).ToList();
                     break;
                 case SortOption.ExpensiveToCheapest:
                     model.Products = model.Products.OrderByDescending(x => x.Price).ToList();
