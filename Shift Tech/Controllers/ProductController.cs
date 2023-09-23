@@ -89,7 +89,7 @@ namespace Shift_Tech.Controllers
                 product.InStock = updatedProduct.InStock;
             }
             _context.SaveChanges();
-            return RedirectToAction("ProductList"); // Replace with your desired action
+            return Ok("Success!"); // Replace with your desired action
         }
       
         public void ClearMainImage(int productId)

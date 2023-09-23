@@ -122,8 +122,8 @@ namespace Shift_Tech.Controllers
             {
                 return NotFound(); 
             }
-
-            return View("ProductDetail", product); 
+            var sameProducts = GetProducts().Where(x=> x.Category == product.Category).OrderByDescending(x => x.Purchases.Count).Take(6).ToList();
+            return View("ProductDetail", new { Product = product, SameProducts = sameProducts }); 
         }
         public async Task<IActionResult> ProductList(ProductListViewModel model)
         {

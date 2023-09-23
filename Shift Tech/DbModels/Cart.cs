@@ -7,12 +7,12 @@ namespace Shift_Tech.DbModels
     {
         public Cart()
         {
-            Products = new HashSet<Product>();
+            Products = new HashSet<CartProduct>();
         }
         [Key]
         public int UserId { get; set; }
         [ForeignKey(nameof(UserId))]
         public virtual User User { get; set; }
-        public virtual ICollection<Product> Products { get; set; }
+        public virtual ICollection<CartProduct> Products { get; set; }
     }
 }

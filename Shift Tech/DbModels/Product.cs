@@ -7,7 +7,7 @@ namespace Shift_Tech.DbModels
     {
         public Product()
         {
-            Purchases = new HashSet<Purchase>();
+            Purchases = new HashSet<CartProduct>();
             Reviews = new HashSet<Review>();
             Images = new HashSet<ImageFile>();
         }
@@ -25,7 +25,7 @@ namespace Shift_Tech.DbModels
         public int CategoryId { get; set; }
         [ForeignKey(nameof(CategoryId))]
         public Category Category { get; set; }
-        public virtual ICollection<Purchase> Purchases { get; set; }
+        public virtual ICollection<CartProduct> Purchases { get; set; }
         public virtual ICollection<Review> Reviews { get; set; }
         public virtual ICollection<ImageFile> Images { get; set; }
       

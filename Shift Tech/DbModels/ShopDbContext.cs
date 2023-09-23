@@ -14,6 +14,8 @@ namespace Shift_Tech.DbModels
         public virtual DbSet<Product> Products { get; set; }
         public virtual DbSet<Review> Reviews { get; set; }
         public virtual DbSet<Category> Categories { get; set; }
-        public virtual DbSet<Purchase> Purchases { get; set; }
+        public virtual DbSet<CartProduct> Purchases { get; set; }
+        public virtual DbSet<Cart> Carts { get; set; }
+        public virtual DbSet<Checkout> Checkouts { get; set; }
     }
 }
