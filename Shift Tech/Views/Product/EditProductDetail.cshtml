@@ -68,8 +68,8 @@ https://cdn.jsdelivr.net/npm/sweetalert2@11.7.28/dist/sweetalert2.min.css
             <input type="hidden" name="ProductId" value="@Model.Product.Id">
         </div>
     </div>
-    <button type="submit" class="btn btn-primary" onclick="saveProduct()">Save</button>
-    <a href="#" class="btn btn-danger" onclick="confirmDelete(@Model.Product.Id, '@Model.Product.Name')">Delete</a>
+    <button class="btn btn-primary" onclick="saveProduct()">Save</button>
+    <button class="btn btn-danger" onclick="confirmDelete(@Model.Product.Id, '@Model.Product.Name')">Delete</button>
 </form>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.min.js"></script>
 
@@ -204,6 +204,7 @@ https://cdn.jsdelivr.net/npm/sweetalert2@11.7.28/dist/sweetalert2.min.css
                         title: 'Images Updated!',
                         icon: 'success'
                     });
+                }
             });
     });
 

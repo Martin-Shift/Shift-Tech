@@ -111,14 +111,14 @@
                                     <i class="fa fa-minus"></i>
                                 </button>
                             </div>
-                            <input type="text" class="form-control bg-secondary border-0 text-center" value="1">
+                            <input type="text" class="form-control bg-secondary border-0 text-center" id="CartAmount" value="1" minvalue="1" maxvalue="@product.InStock">
                             <div class="input-group-btn">
                                 <button class="btn btn-primary btn-plus">
                                     <i class="fa fa-plus"></i>
                                 </button>
                             </div>
                         </div>
-                        <button class="btn btn-primary px-3">
+                        <button class="btn btn-primary px-3" onclick="addToCart(@product.Id)">
                             <i class="fa fa-shopping-cart mr-1"></i> Add To
                             Cart
                         </button>
@@ -259,6 +259,67 @@
     @section footer {
 
     }
+    <script>
+        function addToCart(productId) {
+            var cartamount = document.getElementById("CartAmount").value;
+            const productCount = parseInt(cartamount);
+
+            fetch("/Shop/AddToCart", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ productId: productId, productAmount: productCount })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Network response was not ok");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    document.getElementById("cartItemCount").textContent = data.cartItemCount;
+                })
+                .catch(error => {
+                    console.error("Fetch error:", error);
+                });
+        }
+        document.addEventListener("DOMContentLoaded", function () {
+            const cartAmountInput = document.getElementById("CartAmount");
+            const minValue = 1;
+            const maxValue = @product.InStock;
+
+            cartAmountInput.addEventListener("input", function () {
+                let quantity = parseInt(cartAmountInput.value);
+
+                if (isNaN(quantity)) {
+                    quantity = minValue;
+                } else if (quantity < minValue) {
+                    quantity = minValue;
+                } else if (quantity > maxValue) {
+                    quantity = maxValue;
+                }
+
+                cartAmountInput.value = quantity;
+            });
+
+            document.querySelector(".btn-minus").addEventListener("click", function () {
+                let quantity = parseInt(cartAmountInput.value);
+                if (quantity < minValue) {
+                    quantity = minValue;
+                }
+                cartAmountInput.value = quantity;
+            });
+
+            document.querySelector(".btn-plus").addEventListener("click", function () {
+                let quantity = parseInt(cartAmountInput.value);
+                if (quantity > maxValue) {
+                    quantity = maxValue;
+                }
+                cartAmountInput.value = quantity;
+            });
+        });
+    </script>
 </body>
 
 </html>

@@ -37,7 +37,24 @@ namespace Shift_Tech.Controllers
         => GetCategories()
                 .Take(4)
                 .ToList();
-
+        public List<Cart> GetCarts()
+        {
+            return _context.Carts
+                 .Include(x => x.User)
+                 .Include(x => x.Products)
+                 .ThenInclude(x => x.Product)
+                 .ThenInclude(product => product.MainImage)
+                 .Include(x => x.Products)
+                 .ThenInclude(x => x.Product)
+                 .ThenInclude(product => product.Category)
+                    .Include(x => x.Products)
+                 .ThenInclude(x => x.Product)
+                 .ThenInclude(product => product.Reviews)
+                     .Include(x => x.Products)
+                 .ThenInclude(x => x.Product)
+                 .ThenInclude(product => product.Images)
+                 .ToList();
+        }
         public List<Product> GetCurrentPage(List<Product> products, int page)
         {
             return products.Skip((page - 1) * 9).Take(9).ToList();
@@ -109,7 +126,7 @@ namespace Shift_Tech.Controllers
 
             if (product == null)
             {
-                return NotFound(); 
+                return NotFound();
             }
             return RedirectToAction("ShowProductDetail", new { productId = id });
         }
@@ -120,10 +137,79 @@ namespace Shift_Tech.Controllers
 
             if (product == null)
             {
-                return NotFound(); 
+                return NotFound();
             }
-            var sameProducts = GetProducts().Where(x=> x.Category == product.Category).OrderByDescending(x => x.Purchases.Count).Take(6).ToList();
-            return View("ProductDetail", new { Product = product, SameProducts = sameProducts }); 
+            var sameProducts = GetProducts().Where(x => x.Category == product.Category).OrderByDescending(x => x.Purchases.Count).Take(6).ToList();
+            return View("ProductDetail", new { Product = product, SameProducts = sameProducts });
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetCartItemCount()
+        {
+            int itemcount = 0;
+            if (User.Identity.IsAuthenticated)
+            {
+                var user = await _userManager.GetUserAsync(User);
+                itemcount = user.Cart == null ? 0 : user.Cart.Products.Count;
+            }
+            return View(itemcount);
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddToCart([FromBody] AddToCartModel model)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var cart = GetCarts().FirstOrDefault(x => x.UserId == user.Id);
+            if (cart == null)
+            {
+                cart = new Cart()
+                {
+                    UserId = user.Id,
+                };
+            }
+            var product = await _context.Products.FindAsync(model.productId);
+            var cartproduct = new CartProduct()
+            {
+                Product = product,
+                ProductCount = model.productAmount
+            };
+
+            var find = _context.CartProducts.Include(x=> x.Product).FirstOrDefault(x=> x.Product.Id == cartproduct.Product.Id );
+            if(find != null)
+            {
+                find.ProductCount += cartproduct.ProductCount;
+            }
+            else
+            {
+                _context.CartProducts.Add(cartproduct);
+
+                cart.Products.Add(cartproduct);
+                try
+                {
+                    _context.SaveChanges();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Exception: {e.Message}");
+                }
+            }
+            return Ok("Success!");
+        }
+
+
+
+
+        [HttpGet]
+        public async Task<IActionResult> Cart()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var cart = GetCarts().FirstOrDefault(x => x.UserId == user.Id);
+            if (cart == null)
+            {
+                cart = new Cart()
+                {
+                    UserId = user.Id,
+                };
+            }
+            return View(cart);
         }
         public async Task<IActionResult> ProductList(ProductListViewModel model)
         {

@@ -10,20 +10,25 @@
 <div class="container">
     <h1>Manage Products</h1>
 
-    <!-- Loop through the products -->
+    <div class="row pb-3">
     @foreach (Product product in Model.Products)
     {
         var image = product.MainImage;
-        <div class="card mb-4">
-            <img src="@image?.Url()" class="card-img-top" alt="Product Image">
-            <div class="card-body">
-                <h5 class="card-title">@product.Name</h5>
-                <p class="card-text">Price: $@product.Price</p>
-                <a href="@Url.Action("EditProductDetail", "Product", new { productId = product.Id })" class="btn btn-primary">Edit</a>
+       
+            <div class="col-lg-4 col-md-6 col-sm-6 pb-1">
+                <div class="justify-content-center product-item bg-light mb-4">
+                    <div class="justify-content-center product-img position-relative overflow-hidden d-flex align-items-center">
+                    <img src="@image?.Url()" class="card-img-top" alt="Product Image">
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">@product.Name</h5>
+                        <p class="card-text">Price: $@product.Price</p>
+                        <a href="@Url.Action("EditProductDetail", "Product", new { productId = product.Id })" class="btn btn-primary">Edit</a>
+                    </div>
+                </div>
             </div>
-        </div>
-
-    }
+        }
+    </div>
     <div class="card mb-4">
         <div class="card-body">
             <h5 class="card-title">Add New Product</h5>
@@ -72,8 +77,8 @@
         })
             .then(response => response.json())
             .then(data => {
-                if (data.message == "Success!") {
-                    window.location.href = "/Products/EditProducts"; 
+                if (data.ok) {
+                    window.location.href = "/Products/EditProducts";
                 } else {
                     alert("Failed to add product. Please try again.");
                 }
