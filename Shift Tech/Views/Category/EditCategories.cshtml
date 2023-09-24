@@ -11,8 +11,10 @@
     @foreach (var category in Model.Categories)
     {
         <div class="col-md-3 mb-3 category-form">
-            <div class="card " style="max-width: 300px; max-height: 500px;">
+            <div class="card ">
+                <div class="card-image-container justify-content-center product-img position-relative overflow-hidden d-flex align-items-center">
                 <img src="@category.Image?.Url()" class="card-img-top" alt="Category Image" style="max-width: 250px; max-height: 250px;">
+                </div>
                 <div class="card-body">
                     <h5 class="card-title">@category.Name</h5>
                     <div class="input-group mb-2">

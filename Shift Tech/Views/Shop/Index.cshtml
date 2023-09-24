@@ -119,8 +119,8 @@
             var avg = feat.Reviews.Count == 0 ? 0 : feat.Reviews.Average(x => x.Rating);
             <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
             <div class="product-item bg-light mb-4">
-                <div class="product-img position-relative overflow-hidden">
-                    <img class="img-fluid w-100" src="@feat.MainImage?.Url()" alt="">
+                    <div class="card-image-container justify-content-center product-img position-relative overflow-hidden d-flex align-items-center">
+                        <img class="img-fluid w-100" src="@feat.MainImage?.Url()" alt="">
                     <div class="product-action">
                             <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-shopping-cart"></i></a>
                             <a class="btn btn-outline-dark btn-square" href="@Url.Action("ProductDetail", "Shop", new { id = feat.Id })"><i class="fa fa-search"></i></a>
@@ -169,7 +169,7 @@
             var avg = product.Reviews.Count == 0 ? 0 : product.Reviews.Average(x => x.Rating);
             <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
                 <div class="product-item bg-light mb-4">
-                    <div class="product-img position-relative overflow-hidden">
+                    <div class="card-image-container justify-content-center product-img position-relative overflow-hidden d-flex align-items-center">
                         <img class="img-fluid w-100" src="@product.MainImage?.Url()" alt="">
                         <div class="product-action">
                             <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-shopping-cart"></i></a>

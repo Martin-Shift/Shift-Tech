@@ -18,13 +18,14 @@
        
             <div class="col-lg-4 col-md-6 col-sm-6 pb-1">
                 <div class="justify-content-center product-item bg-light mb-4">
-                    <div class="justify-content-center product-img position-relative overflow-hidden d-flex align-items-center">
-                    <img src="@image?.Url()" class="card-img-top" alt="Product Image">
+                    <div class="card-image-container justify-content-center product-img position-relative overflow-hidden d-flex align-items-center">
+                        <img src="@image?.Url()" class="card-img-top" alt="Product Image">
                     </div>
                     <div class="card-body">
                         <h5 class="card-title">@product.Name</h5>
                         <p class="card-text">Price: $@product.Price</p>
                         <a href="@Url.Action("EditProductDetail", "Product", new { productId = product.Id })" class="btn btn-primary">Edit</a>
+                        <button class="btn btn-danger" onclick="confirmDelete(@product.Id, '@product.Name')">Delete</button>
                     </div>
                 </div>
             </div>
@@ -83,5 +84,48 @@
             .catch(error => {
                 alert("Error: " + error.message);
             });
+    }
+    function confirmDelete(productId, productName) {
+        Swal.fire({
+            title: 'Delete Product',
+            text: `Are you sure you want to delete the product '${productName}'?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            confirmButtonText: 'Delete',
+            showLoaderOnConfirm: true,
+            preConfirm: () => {
+                return fetch("/Product/DeleteProduct", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(productId)
+                })
+                    .then(response => {
+                        if (response.message="Success!") {
+                            Swal.fire({
+                                title: 'Product Deleted!',
+                                icon: 'success'
+                            });
+                            location.reload();
+                        } else {
+                            Swal.fire({
+                                title: 'Error Deleting Product',
+                                text: response.statusText,
+                                icon: 'error'
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        Swal.fire({
+                            title: 'Network Error',
+                            text: error.message,
+                            icon: 'error'
+                        });
+                    });
+            },
+            allowOutsideClick: () => !Swal.isLoading()
+        });
     }
 </script>

@@ -62,17 +62,17 @@ namespace Shift_Tech.Controllers
             return Ok(new { Message = "Success!" });
         }
         [HttpPost]
-        public IActionResult DeleteProduct(int productId)
+        public IActionResult DeleteProduct([FromBody] int productId)
         {
             var product = _context.Products.FirstOrDefault(x => x.Id == productId);
             if (product != null)
             {
                 product.Reviews.Clear();
                 product.Purchases.Clear();
-                ClearImages(productId);
                 _context.Products.Remove(product);
             }
-            return RedirectToAction("ProductList"); // Replace with your desired action
+            _context.SaveChanges();
+            return Ok(new {Message= "Success!" }); 
         }
         [HttpPost]
         public IActionResult UpdateProduct([FromBody] Product updatedProduct) 
@@ -85,7 +85,7 @@ namespace Shift_Tech.Controllers
                 product.Name = updatedProduct.Name;
                 product.Description = updatedProduct.Description;
                 product.ShortDescription = updatedProduct.ShortDescription;
-                product.Category = _context.Categories.First(x=> x.Id == updatedProduct.CategoryId);
+                product.CategoryId = updatedProduct.CategoryId;
                 product.InStock = updatedProduct.InStock;
             }
             _context.SaveChanges();

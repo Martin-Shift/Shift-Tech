@@ -136,7 +136,7 @@ namespace Shift_Tech.Controllers
             {
                 return NotFound();
             }
-            var sameProducts = GetProducts().Where(x => x.Category == product.Category).OrderByDescending(x => x.Purchases.Count).Take(6).ToList();
+            var sameProducts = GetProducts().Where(x => x.Category == product.Category).Where(x=> x.Id != productId).OrderByDescending(x => x.Purchases.Count).Take(6).ToList();
             return View("ProductDetail", new { Product = product, SameProducts = sameProducts });
         }
         //Cart

@@ -158,7 +158,7 @@
                         var avg = product.Reviews.Count == 0 ? 0 : product.Reviews.Average(x => x.Rating);
                         <div class="col-lg-4 col-md-6 col-sm-6 pb-1">
                             <div class="  justify-content-center product-item bg-light mb-4">
-                                <div class="justify-content-center product-img position-relative overflow-hidden d-flex align-items-center">
+                                <div class="card-image-container justify-content-center product-img position-relative overflow-hidden d-flex align-items-center">
                                     <img class="img-fluid w-100" src="@product.MainImage?.Url()" alt="">
                                     <div class="product-action">
                                         <a class="btn btn-outline-dark btn-square add-to-cart-button" onclick="addToCart(@product.Id)"><i class="fa fa-shopping-cart"></i></a>
