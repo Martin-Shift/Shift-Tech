@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Manage Categories";
+    Layout = "_AdminLayout";
 }
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
@@ -194,7 +195,7 @@
             body: formData
         }).then(r => r.json())
             .then(data => {
-                console.log(data);
+                location.reload();
             });
     });
 </script>

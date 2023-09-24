@@ -77,10 +77,6 @@ namespace Shift_Tech.Controllers
         [HttpPost]
         public IActionResult EditCategoryName([FromBody] Category category)
         {
-            if (!ModelState.IsValid)
-            {
-                return View();
-            }
             if(_context.Categories.Any(x=> x.Name.ToLower()==category.Name))
             {
                 return View();

@@ -6,7 +6,7 @@
     ViewData["Title"] = "Product Detail";
     var isAdmin = User.IsInRole("admin");
     var product = Model.Product as Product;
-    var avg = product.Reviews.Count == 0 ? 0 : product.Reviews.Average(x => x.Rating);
+    var productavg = product.Reviews.Count == 0 ? 0 : product.Reviews.Average(x => x.Rating);
 }
 @section styles {
 
@@ -18,32 +18,6 @@
 
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="utf-8">
-    <title>MultiShop - Online Shop Website Template</title>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta content="Free HTML Templates" name="keywords">
-    <meta content="Free HTML Templates" name="description">
-
-    <!-- Favicon -->
-    <link href="img/favicon.ico" rel="icon">
-
-    <!-- Google Web Fonts -->
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-
-    <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
-
-    <!-- Libraries Stylesheet -->
-    <link href="lib/animate/animate.min.css" rel="stylesheet">
-    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
-
-    <!-- Customized Bootstrap Stylesheet -->
-    <link href="css/style.css" rel="stylesheet">
-</head>
-
 <body>
 
     @section header {
@@ -61,7 +35,7 @@
                         </div>
                         @foreach(ImageFile image in product.Images)
                         {
-                        <div class="carousel-item active">
+                        <div class="carousel-item">
                             <img class="w-100 h-100" src="@image.Url()" alt="Image">
                         </div>
                         }
@@ -80,19 +54,19 @@
                     <h3>@product.Name</h3>
                     <div class="d-flex mb-3">
                         <div class="text-primary mr-2">
-                            @for (int i = 0; i < Convert.ToInt32(avg); i++)
+                            @for (int i = 0; i < Convert.ToInt32(productavg); i++)
                             {
                                 <small class="fa fa-star text-primary mr-1"></small>
                             }
-                            @if (avg % 1 >= 0.4)
+                            @if (productavg % 1 >= 0.4)
                             {
                                 <small class="fa fa-star-half-alt text-primary mr-1"></small>
                             }
-                            @if (avg % 1 < 0.4 && avg != 0)
+                            @if (productavg % 1 < 0.4 && productavg != 0)
                             {
                                 <small class="far fa-star text-primary mr-1"></small>
                             }
-                            @for (int i = 0; i < Convert.ToInt32(5 - avg); i++)
+                            @for (int i = 0; i < Convert.ToInt32(5 - productavg); i++)
                             {
                                 <small class="far fa-star text-primary mr-1"></small>
                             }
@@ -225,30 +199,50 @@
         <div class="row px-xl-5">
             <div class="col">
                 <div class="owl-carousel related-carousel">
+                    @foreach(Product item in Model.SameProducts){ 
+                    var tvg = item.Reviews.Count == 0 ? 0 : item.Reviews.Average(x => x.Rating);
                     <div class="product-item bg-light">
                         <div class="product-img position-relative overflow-hidden">
-                            <img class="img-fluid w-100" src="img/product-1.jpg" alt="">
+                            <img class="img-fluid w-100" src="@item.MainImage?.Url()" alt="">
                             <div class="product-action">
-                                <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-shopping-cart"></i></a>
-                                <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-search"></i></a>
+                                    <a class="btn btn-outline-dark btn-square add-to-cart-button" onclick="addToCart(@item.Id)"><i class="fa fa-shopping-cart"></i></a>
+                                    <a class="btn btn-outline-dark btn-square" href="@Url.Action("ProductDetail", "Shop", new { id = item.Id })"><i class="fa fa-search"></i></a>
+
                             </div>
                         </div>
                         <div class="text-center py-4">
-                            <a class="h6 text-decoration-none text-truncate" href="">Product Name Goes Here</a>
+                            <a class="h6 text-decoration-none text-truncate" href="">@product.Name</a>
                             <div class="d-flex align-items-center justify-content-center mt-2">
-                                <h5>$123.00</h5><h6 class="text-muted ml-2"><del>$123.00</del></h6>
+                                    <h5>$@item.Price</h5>
+                                    @if (item.Price != item.PreviousPrice)
+                                {
+                                <h6 class="text-muted ml-2"><del>$@item.PreviousPrice</del>
+                                    </h6>
+                                }
                             </div>
-                            <div class="d-flex align-items-center justify-content-center mb-1">
-                                <small class="fa fa-star text-primary mr-1"></small>
-                                <small class="fa fa-star text-primary mr-1"></small>
-                                <small class="fa fa-star text-primary mr-1"></small>
-                                <small class="fa fa-star text-primary mr-1"></small>
-                                <small class="fa fa-star text-primary mr-1"></small>
-                                <small>(99)</small>
-                            </div>
+                                <div class="d-flex align-items-center justify-content-center mb-1">
+
+                                    @for (int i = 0; i < Convert.ToInt32(productavg); i++)
+                                    {
+                                        <small class="fa fa-star text-primary mr-1"></small>
+                                    }
+                                    @if (productavg % 1 >= 0.4)
+                                    {
+                                        <small class="fa fa-star-half-alt text-primary mr-1"></small>
+                                    }
+                                    @if (productavg % 1 < 0.4 && productavg != 0)
+                                    {
+                                        <small class="far fa-star text-primary mr-1"></small>
+                                    }
+                                    @for (int i = 0; i < Convert.ToInt32(5 - productavg); i++)
+                                    {
+                                        <small class="far fa-star text-primary mr-1"></small>
+                                    }
+                                    <small>(@product.Reviews.Count)</small>
+                                </div>
                         </div>
                     </div>
-
+                    }
                  </div>
             </div>
         </div>

@@ -21,7 +21,7 @@ namespace Shift_Tech.Controllers
             _context = context;
             _webHostEnvironment = webHostEnvironment;
         }
-
+        //Getters
         public List<Product> GetProducts() => _context.Products
                 .Include(x => x.Category)
                 .Include(x => x.Images)
@@ -63,37 +63,16 @@ namespace Shift_Tech.Controllers
         {
             return products.Count / 9 + (products.Count % 9 == 0 ? 0 : 1);
         }
-
         public List<Product> GetTopProducts() =>
                 GetProducts()
                 .OrderByDescending(x => x.Purchases.Count)
                 .Take(8)
                 .ToList();
-
         public List<Product> GetRecentProducts() =>
             GetProducts()
             .OrderByDescending(x => x.Date)
             .Take(8)
             .ToList();
-        public IActionResult Index()
-        {
-
-            return View(new { FeaturedCategories = GetTopCategories(), FeaturedProducts = GetTopProducts(), RecentProducts = GetRecentProducts() });
-            // return View();
-        }
-        public ShopFilter CreateShopFilter(List<Product> products)
-        {
-            return new()
-            {
-                SearchString = "",
-                StartPrice = Convert.ToInt32(Math.Floor(products.Min(x => x.Price))),
-                EndPrice = Convert.ToInt32(Math.Floor(products.Max(x => x.Price))),
-                CurrentPage = 1,
-                PageCount = GetPageCount(products),
-                SelectedCategories = new List<Category>()
-
-            };
-        }
         public List<Category> GetShopListCategories(List<Product> products)
         {
             return products.OrderBy(product => product.CategoryId)
@@ -114,15 +93,32 @@ namespace Shift_Tech.Controllers
               )
               .Where(x => filter.SelectedCategories.Count == 0 || filter.SelectedCategories.Any(c => c == x.Category)).ToList();
         }
-        [HttpGet]
-        public async Task<IActionResult> ProductList()
+        public ShopFilter CreateShopFilter(List<Product> products)
         {
-            return View(new ProductListViewModel() { Products = GetProducts(), Categories = GetShopListCategories(GetProducts()), Filter = CreateShopFilter(GetProducts()) });
+            return new()
+            {
+                SearchString = "",
+                StartPrice = Convert.ToInt32(Math.Floor(products.Min(x => x.Price))),
+                EndPrice = Convert.ToInt32(Math.Floor(products.Max(x => x.Price))),
+                CurrentPage = 1,
+                PageCount = GetPageCount(products),
+                SelectedCategories = new List<Category>()
+
+            };
         }
+
+        //Home page
+        public IActionResult Index()
+        {
+
+            return View(new { FeaturedCategories = GetTopCategories(), FeaturedProducts = GetTopProducts(), RecentProducts = GetRecentProducts() });
+            // return View();
+        }
+        //Product Detail
         [HttpGet]
         public IActionResult ProductDetail(int id)
         {
-            var product = _context.Products.Find(id);
+            var product = GetProducts().First(x=> x.Id == id);
 
             if (product == null)
             {
@@ -133,7 +129,8 @@ namespace Shift_Tech.Controllers
         [HttpGet("Shop/ProductDetail/{productId}")]
         public IActionResult ShowProductDetail(int productId)
         {
-            var product = _context.Products.Find(productId);
+            var product = GetProducts().First(x => x.Id == productId);
+
 
             if (product == null)
             {
@@ -142,6 +139,7 @@ namespace Shift_Tech.Controllers
             var sameProducts = GetProducts().Where(x => x.Category == product.Category).OrderByDescending(x => x.Purchases.Count).Take(6).ToList();
             return View("ProductDetail", new { Product = product, SameProducts = sameProducts });
         }
+        //Cart
         [HttpGet]
         public async Task<IActionResult> GetCartItemCount()
         {
@@ -172,8 +170,8 @@ namespace Shift_Tech.Controllers
                 ProductCount = model.productAmount
             };
 
-            var find = _context.CartProducts.Include(x=> x.Product).FirstOrDefault(x=> x.Product.Id == cartproduct.Product.Id );
-            if(find != null)
+            var find = _context.CartProducts.Include(x => x.Product).FirstOrDefault(x => x.Product.Id == cartproduct.Product.Id);
+            if (find != null)
             {
                 find.ProductCount += cartproduct.ProductCount;
             }
@@ -193,10 +191,6 @@ namespace Shift_Tech.Controllers
             }
             return Ok("Success!");
         }
-
-
-
-
         [HttpGet]
         public async Task<IActionResult> Cart()
         {
@@ -210,6 +204,12 @@ namespace Shift_Tech.Controllers
                 };
             }
             return View(cart);
+        }
+        [HttpGet]
+        //Product List
+        public async Task<IActionResult> ProductList()
+        {
+            return View(new ProductListViewModel() { Products = GetProducts(), Categories = GetShopListCategories(GetProducts()), Filter = CreateShopFilter(GetProducts()) });
         }
         public async Task<IActionResult> ProductList(ProductListViewModel model)
         {

@@ -3,6 +3,7 @@
 @using System.ComponentModel.DataAnnotations.Schema;
 @{
     ViewData["Title"] = "Manage Products";
+    Layout = "_AdminLayout";
 }
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css">
@@ -40,7 +41,7 @@
 
                 <div class="form-group">
                     <label for="NewProductPrice">Price</label>
-                    <input type="number" class="form-control" id="NewProductPrice" name="NewProductPrice" placeholder="Enter Product Price" step="0.01" required>
+                    <input type="number" class="form-control" style="width:350px" id="NewProductPrice" name="NewProductPrice" placeholder="Enter Product Price" step="0.01" required>
                 </div>
                 <div class="form-group">
                     <label for="Category">Category</label>
@@ -77,11 +78,7 @@
         })
             .then(response => response.json())
             .then(data => {
-                if (data.ok) {
-                    window.location.href = "/Products/EditProducts";
-                } else {
-                    alert("Failed to add product. Please try again.");
-                }
+                location.reload();
             })
             .catch(error => {
                 alert("Error: " + error.message);
