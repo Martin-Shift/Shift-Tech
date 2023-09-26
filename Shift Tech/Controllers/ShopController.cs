@@ -81,32 +81,23 @@ namespace Shift_Tech.Controllers
                                  .Take(6)
                                  .ToList();
         }
-        public List<Product> FilterProducts(ShopFilter filter, List<Product> products)
+        public List<Product> FilterProductsByPrice(List<Product> products,PriceRange filter)
         {
             return products
               .Where(x =>
-              x.Name.ToLower().Contains(filter.SearchString.ToLower()) ||
-              x.ShortDescription.ToLower().Contains(filter.SearchString.ToLower()) ||
-              x.Description.ToLower().Contains(filter.SearchString.ToLower()))
-              .Where(x =>
-                  x.Price >= filter.StartPrice && x.Price <= filter.EndPrice
-              )
-              .Where(x => filter.SelectedCategories.Count == 0 || filter.SelectedCategories.Any(c => c == x.Category)).ToList();
+             x.Price >= filter.StartPrice && x.Price <= filter.EndPrice).ToList();
         }
-        public ShopFilter CreateShopFilter(List<Product> products)
+        public List<Product> FilterProductsByCategory(List<Product> products,List<Category> selectedCategories)
         {
-            return new()
-            {
-                SearchString = "",
-                StartPrice = Convert.ToInt32(Math.Floor(products.Min(x => x.Price))),
-                EndPrice = Convert.ToInt32(Math.Floor(products.Max(x => x.Price))),
-                CurrentPage = 1,
-                PageCount = GetPageCount(products),
-                SelectedCategories = new List<Category>()
-
-            };
+            if(selectedCategories.Count == 0) return products;
+            return products
+              .Where(x => selectedCategories.Any(c => c.Id == x.CategoryId)).ToList();
         }
+        public PriceRange GetPriceRange(List<Product> products)
+        {
+            return new PriceRange() { StartPrice = (int)Math.Floor(products.Min(x => x.Price)), EndPrice = (int)Math.Floor(products.Max(x => x.Price)) };
 
+        }
         //Home page
         public IActionResult Index()
         {
@@ -139,6 +130,19 @@ namespace Shift_Tech.Controllers
             var sameProducts = GetProducts().Where(x => x.Category == product.Category).Where(x=> x.Id != productId).OrderByDescending(x => x.Purchases.Count).Take(6).ToList();
             return View("ProductDetail", new { Product = product, SameProducts = sameProducts });
         }
+        //Review
+        [HttpPost]
+        public async Task<IActionResult> AddReview([FromBody] Review review)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            review.Date = DateTime.Now;
+            review.Publisher = user;
+            _context.Reviews.Add(review);
+            _context.SaveChanges();
+            return Ok("Success!");
+
+
+        }
         //Cart
         [HttpGet]
         public async Task<IActionResult> GetCartItemCount()
@@ -147,7 +151,9 @@ namespace Shift_Tech.Controllers
             if (User.Identity.IsAuthenticated)
             {
                 var user = await _userManager.GetUserAsync(User);
-                itemcount = user.Cart == null ? 0 : user.Cart.Products.Count;
+                var cart = GetCarts().FirstOrDefault(x => x.UserId == user.Id);
+
+                itemcount = cart == null ? 0 : cart.Products.Count;
             }
             return View(itemcount);
         }
@@ -209,43 +215,68 @@ namespace Shift_Tech.Controllers
         //Product List
         public async Task<IActionResult> ProductList()
         {
-            return View(new ProductListViewModel() { Products = GetProducts(), Categories = GetShopListCategories(GetProducts()), Filter = CreateShopFilter(GetProducts()) });
+            ViewData["Products"] = GetProducts();
+            ViewData["Categories"] = GetShopListCategories(GetProducts());
+            ViewData["SelectedCategories"] = new List<Category>();
+            ViewData["PriceRange"] = GetPriceRange(GetProducts());
+            return View();
         }
-        public async Task<IActionResult> ProductList(ProductListViewModel model)
+        //Filter by Price
+        public async Task<IActionResult> ProductList(PriceRange filter)
         {
-            model.Products = FilterProducts(model.Filter, GetProducts());
-            model.Filter.CurrentPage = 1;
-            model.Filter.PageCount = GetPageCount(model.Products);
-            model.Categories = GetShopListCategories(model.Products);
-            return View(model);
+            var products = GetProducts();
+            var categories = ViewData["SelectedCategories"] as List<Category>;
+            products = FilterProductsByCategory(products, categories);
+            ViewData["Products"] = FilterProductsByPrice(products, filter);
+            ViewData["PriceRange"] = filter;
+            return Ok();
         }
-        public async Task<IActionResult> ProductList(ProductListViewModel model, int page)
+        //Filter by Category
+        public async Task<IActionResult> ProductList(List<Category> selectedCategories)
         {
-            model.Filter.CurrentPage = page;
-            return View(model);
+            var products = GetProducts();
+            var pricerange = ViewData["PriceRange"] as PriceRange;
+            products = FilterProductsByCategory(products, selectedCategories);
+            products = FilterProductsByPrice(products, pricerange);
+            ViewData["Products"] = products;
+            ViewData["SelectedCategories"] = selectedCategories;
+            ViewData["PriceRange"] = GetPriceRange(products);
+            return Ok();
         }
-        public async Task<IActionResult> ProductList(ProductListViewModel model, SortOptions options)
+        //Sort
+        public async Task<IActionResult> ProductList(SortOptions options)
         {
-
+            var products = ViewData["Products"] as List<Product>;
             switch (options.SortOption)
             {
                 case SortOption.Top:
-                    model.Products = model.Products.OrderByDescending(x => x.Purchases.Count()).ToList();
+                    products = products.OrderByDescending(x => x.Purchases.Count()).ToList();
                     break;
                 case SortOption.Recent:
-                    model.Products = model.Products.OrderByDescending(x => x.Date).ToList();
+                    products = products.OrderByDescending(x => x.Date).ToList();
                     break;
                 case SortOption.CheapestToExpensive:
-                    model.Products = model.Products.OrderBy(x => x.Price).ToList();
+                    products = products.OrderBy(x => x.Price).ToList();
                     break;
                 case SortOption.ExpensiveToCheapest:
-                    model.Products = model.Products.OrderByDescending(x => x.Price).ToList();
+                    products = products.OrderByDescending(x => x.Price).ToList();
                     break;
                 case SortOption.ByRating:
-                    model.Products = model.Products.OrderByDescending(x => x.Reviews.Average(r => r.Rating)).ToList();
+                    products = products.OrderByDescending(x => x.Reviews.Average(r => r.Rating)).ToList();
                     break;
             }
-            return View(model);
+            ViewData["Products"] = products;
+            return Ok();
+        }
+        //Search
+        public async Task<IActionResult> ProductList(string searchStr)
+        {
+            var products = GetProducts().Where(x => x.Name.ToLower().Contains(searchStr.ToLower())).ToList();
+            ViewData["Products"] = products;
+            ViewData["Categories"] = GetShopListCategories(products);
+            ViewData["SelectedCategories"] = new List<Category>();
+            ViewData["ProductRange"] = GetPriceRange(products);
+                return View();
         }
     }
 }

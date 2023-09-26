@@ -276,14 +276,10 @@
                 }
             })
                 .then(response => {
-                    if (!response.ok) {
-                        throw new Error("Network response was not ok");
-                    }
-                    return response.json();
+
                 })
                 .then(data => {
-                    // Update the cart item count in the layout
-                    document.getElementById("cartItemCount").textContent = data.cartItemCount;
+                    document.getElementById("cartItemCount").textContent = data;
                 })
                 .catch(error => {
                     // Handle errors if needed

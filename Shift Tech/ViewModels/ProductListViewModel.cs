@@ -6,7 +6,7 @@ namespace Shift_Tech.ViewModels
     public class ProductListViewModel
     {
         public List<Product> Products { get; set; }
-        public ShopFilter Filter { get; set; }
+        public PriceRange Filter { get; set; }
         public List<Category> Categories { get; set; }
     }
 }

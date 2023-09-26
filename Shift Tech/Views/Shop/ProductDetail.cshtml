@@ -165,7 +165,6 @@
                                 </div>
                                 <div class="col-md-6">
                                     <h4 class="mb-4">Leave a review</h4>
-                                    <small>Your email address will not be published. Required fields are marked *</small>
                                     <div class="d-flex my-3">
                                         <p class="mb-0 mr-2">Your Rating * :</p>
                                         <div class="text-primary">
@@ -202,7 +201,8 @@
                     @foreach(Product item in Model.SameProducts){ 
                     var tvg = item.Reviews.Count == 0 ? 0 : item.Reviews.Average(x => x.Rating);
                     <div class="product-item bg-light">
-                        <div class="product-img position-relative overflow-hidden">
+                            <div class="card-image-container justify-content-center product-img position-relative overflow-hidden d-flex align-items-center">
+                            0.
                             <img class="img-fluid w-100" src="@item.MainImage?.Url()" alt="">
                             <div class="product-action">
                                     <a class="btn btn-outline-dark btn-square add-to-cart-button" onclick="addToCart(@item.Id)"><i class="fa fa-shopping-cart"></i></a>
