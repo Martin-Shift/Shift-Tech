@@ -275,11 +275,9 @@
                     "Accept": "application/json"
                 }
             })
-                .then(response => {
-
-                })
+                .then(response => response.json())
                 .then(data => {
-                    document.getElementById("cartItemCount").textContent = data;
+                    document.getElementById("cartItemCount").textContent = data.count;
                 })
                 .catch(error => {
                     // Handle errors if needed

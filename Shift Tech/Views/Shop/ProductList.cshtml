@@ -137,7 +137,7 @@
                         }
                     </form>
                 </div>
-               
+
             </div>
             <div class="col-lg-9 col-md-8">
                 <div class="row pb-3">
@@ -219,13 +219,9 @@
         </div>
     </div>
     <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
-</body>
+    @section footer {
 
-
-@section footer {
-
-}
-@section Scripts {
+    }
     <script>
 
         function addToCart(productId) {
@@ -314,13 +310,13 @@
             const fromPosition = from.value - to.min;
             const toPosition = to.value - to.min;
             controlSlider.style.background = `linear-gradient(
-                      to right,
-                      ${sliderColor} 0%,
-                      ${sliderColor} ${(fromPosition) / (rangeDistance) * 100}%,
-                      ${rangeColor} ${((fromPosition) / (rangeDistance)) * 100}%,
-                      ${rangeColor} ${(toPosition) / (rangeDistance) * 100}%,
-                      ${sliderColor} ${(toPosition) / (rangeDistance) * 100}%,
-                      ${sliderColor} 100%)`;
+                              to right,
+                              ${sliderColor} 0%,
+                              ${sliderColor} ${(fromPosition) / (rangeDistance) * 100}%,
+                              ${rangeColor} ${((fromPosition) / (rangeDistance)) * 100}%,
+                              ${rangeColor} ${(toPosition) / (rangeDistance) * 100}%,
+                              ${sliderColor} ${(toPosition) / (rangeDistance) * 100}%,
+                              ${sliderColor} 100%)`;
         }
 
         function setToggleAccessible(currentTarget) {
@@ -345,4 +341,10 @@
         toInput.oninput = () => controlToInput(toSlider, fromInput, toInput, toSlider);
 
     </script>
-}
+    @section Scripts {
+
+    }
+</body>
+
+
+

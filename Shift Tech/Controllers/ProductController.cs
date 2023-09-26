@@ -21,16 +21,22 @@ namespace Shift_Tech.Controllers
             _signInManager = signInManager;
             _webHostEnvironment = webHostEnvironment;
         }
-
+        public List<Product> GetProducts() => _context.Products
+        .Include(x => x.Category)
+        .Include(x => x.Images)
+    .Include(x => x.MainImage)
+    .Include(x => x.Reviews)
+    .Include(x => x.Purchases)
+    .ToList();
         public IActionResult EditProducts()
         {
-            var products = _context.Products.Include(x => x.Images).Include(x=> x.MainImage).Include(x => x.Category).ToList();
+            var products = GetProducts().ToList();
             var categories = _context.Categories.Include(x => x.Image).Include(x => x.Products).ToList();
             return View(new { Products = products, Categories = categories });
         }
    public IActionResult EditProductDetail(int productId)
         {
-            var product = _context.Products.Include(x => x.Images).Include(x => x.Category).First(x => x.Id == productId);
+            var product = GetProducts().First(x => x.Id == productId);
 
             return View(new { Product = product, Categories = _context.Categories });
         }

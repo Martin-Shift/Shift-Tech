@@ -155,7 +155,7 @@ namespace Shift_Tech.Controllers
 
                 itemcount = cart == null ? 0 : cart.Products.Count;
             }
-            return View(itemcount);
+            return Ok(new {Count = itemcount });
         }
         [HttpPost]
         public async Task<IActionResult> AddToCart([FromBody] AddToCartModel model)
@@ -176,7 +176,7 @@ namespace Shift_Tech.Controllers
                 ProductCount = model.productAmount
             };
 
-            var find = _context.CartProducts.Include(x => x.Product).FirstOrDefault(x => x.Product.Id == cartproduct.Product.Id);
+            var find = cart.Products.FirstOrDefault(x => x.Product.Id == cartproduct.Product.Id);
             if (find != null)
             {
                 find.ProductCount += cartproduct.ProductCount;
