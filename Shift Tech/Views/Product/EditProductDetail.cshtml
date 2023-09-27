@@ -52,10 +52,10 @@ https://cdn.jsdelivr.net/npm/sweetalert2@11.7.28/dist/sweetalert2.min.css
         </div>
         <div class="form-group">
             <label for="Price">Price</label>
-            <input type="number" class="form-control" style="width:350px" id="Price" name="Price" value="@Model.Product.Price.ToString("0.00", CultureInfo.InvariantCulture)" step="0.01" required>
+            <input id="CurrentPrice" type="number" class="form-control" style="width:350px" id="Price" name="Price" value="@Model.Product.Price.ToString("0.00", CultureInfo.InvariantCulture)" step="0.01" required>
         </div>
         <div class="form-group">
-            <label for="SalePrice">Previous Price</label>
+            <label for="PreviousPrice">Previous Price</label>
             <input type="number" class="form-control" id="PreviousPrice" style="width:350px" name="PreviousPrice" value="@Model.Product.PreviousPrice.ToString("0.00", CultureInfo.InvariantCulture)" step="0.01" @(Model.Product.Price != Model.Product.PreviousPrice ? "" : "readonly")>
         </div>
         <div class="form-check">
@@ -72,27 +72,6 @@ https://cdn.jsdelivr.net/npm/sweetalert2@11.7.28/dist/sweetalert2.min.css
                 <label for="ProductImage">Product Images</label>
                 <input type="file" class="form-control multiple-upload" id="ProductImages" name="ProductImages" accept="image/*" multiple>
             </div>
-            @if (Model.Product.Images != null)
-            {
-                <div class="col-lg-5 mb-30">
-                    <div id="product-carousel" class="carousel slide" data-ride="carousel">
-                        <div class="carousel-inner bg-light">
-                            @foreach (ImageFile image in Model.Product.Images)
-                            {
-                                <div class="carousel-item">
-                                    <img class="w-100 h-100" src="@image.Url()" alt="Image">
-                                </div>
-                            }
-                        </div>
-                    <a class="carousel-control-prev" href="#product-carousel" data-slide="prev">
-                        <i class="fa fa-2x fa-angle-left text-dark"></i>
-                    </a>
-                    <a class="carousel-control-next" href="#product-carousel" data-slide="next">
-                        <i class="fa fa-2x fa-angle-right text-dark"></i>
-                    </a>
-                </div>
-            </div>
-            }
             <input type="hidden" name="ProductId" value="@Model.Product.Id">
         </div>
     </div>
@@ -104,11 +83,9 @@ https://cdn.jsdelivr.net/npm/sweetalert2@11.7.28/dist/sweetalert2.min.css
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
 <script>
     document.getElementById("SaleToggle").addEventListener("change", function () {
-        const salePriceField = document.getElementById("SalePrice");
+        const salePriceField = document.getElementById("PreviousPrice");
         salePriceField.readOnly = !this.checked;
-        if (!this.checked) {
-            salePriceField.value = "";
-        }
+        salePriceField.value = document.getElementById("CurrentPrice").value;
     });
     function saveProduct() {
         var productId = "@Model.Product.Id";
@@ -117,8 +94,9 @@ https://cdn.jsdelivr.net/npm/sweetalert2@11.7.28/dist/sweetalert2.min.css
         var fullDescription = $("#FullDescription").val();
         var inStock = $("#InStock").val();
         var category = $("#Category").val();
-        var price = $("#Price").val().replace(',', '.');
+        var price = $("#CurrentPrice").val().replace(',', '.');
         var previousPrice = $("#PreviousPrice").val().replace(',', '.');
+        if(previousPrice < price) { previousPrice == price; }
         var updatedProduct = {
             Id: productId,
             Name: productName,
