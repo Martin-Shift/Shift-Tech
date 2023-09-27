@@ -81,15 +81,15 @@ namespace Shift_Tech.Controllers
                                  .Take(6)
                                  .ToList();
         }
-        public List<Product> FilterProductsByPrice(List<Product> products,PriceRange filter)
+        public List<Product> FilterProductsByPrice(List<Product> products, PriceRange filter)
         {
             return products
               .Where(x =>
              x.Price >= filter.StartPrice && x.Price <= filter.EndPrice).ToList();
         }
-        public List<Product> FilterProductsByCategory(List<Product> products,List<Category> selectedCategories)
+        public List<Product> FilterProductsByCategory(List<Product> products, List<Category> selectedCategories)
         {
-            if(selectedCategories.Count == 0) return products;
+            if (selectedCategories.Count == 0) return products;
             return products
               .Where(x => selectedCategories.Any(c => c.Id == x.CategoryId)).ToList();
         }
@@ -109,39 +109,56 @@ namespace Shift_Tech.Controllers
         [HttpGet]
         public IActionResult ProductDetail(int id)
         {
-            var product = GetProducts().First(x=> x.Id == id);
+            var product = GetProducts().First(x => x.Id == id);
 
             if (product == null)
             {
                 return NotFound();
             }
+
             return RedirectToAction("ShowProductDetail", new { productId = id });
         }
+
+        [HttpGet]
+        public IActionResult GetTopCategoriesView() =>
+            View(
+               GetCategories()
+               .OrderByDescending(x => x.Products.Count)
+               .Take(8)
+               .ToList());
         [HttpGet("Shop/ProductDetail/{productId}")]
-        public IActionResult ShowProductDetail(int productId)
+        public async Task<IActionResult> ShowProductDetail(int productId)
         {
             var product = GetProducts().First(x => x.Id == productId);
-
-
+            var user = await _userManager.GetUserAsync(User);
+            var reviews = _context.Reviews.Include(x=> x.Product).Include(x => x.Publisher).ThenInclude(x => x.Logo).Where(x=> x.Product.Id == productId).ToList();
+            var review = reviews.FirstOrDefault(x => x.Publisher == user);
+            ViewData["IsReviewed"] = review != null;
+            ViewData["Reviews"] = reviews;
             if (product == null)
             {
                 return NotFound();
             }
-            var sameProducts = GetProducts().Where(x => x.Category == product.Category).Where(x=> x.Id != productId).OrderByDescending(x => x.Purchases.Count).Take(6).ToList();
+            var sameProducts = GetProducts().Where(x => x.Category == product.Category).Where(x => x.Id != productId).OrderByDescending(x => x.Purchases.Count).Take(6).ToList();
             return View("ProductDetail", new { Product = product, SameProducts = sameProducts });
         }
         //Review
         [HttpPost]
-        public async Task<IActionResult> AddReview([FromBody] Review review)
+        public async Task<IActionResult> AddReview([FromBody] AddReviewModel reviewModel)
         {
-            var user = await _userManager.GetUserAsync(User);
-            review.Date = DateTime.Now;
-            review.Publisher = user;
+             var user = await _userManager.GetUserAsync(User);
+            var product = _context.Products.First(x => x.Id == reviewModel.productId);
+            var review = new Review()
+            {
+                Description = reviewModel.Description,
+                Rating = reviewModel.Rating,
+                Date = DateTime.Now,
+                Publisher = user,
+                Product = product
+            };
             _context.Reviews.Add(review);
             _context.SaveChanges();
-            return Ok("Success!");
-
-
+            return Ok(new { Message = "Success!" });
         }
         //Cart
         [HttpGet]
@@ -155,7 +172,7 @@ namespace Shift_Tech.Controllers
 
                 itemcount = cart == null ? 0 : cart.Products.Count;
             }
-            return Ok(new {Count = itemcount });
+            return Ok(new { Count = itemcount });
         }
         [HttpPost]
         public async Task<IActionResult> AddToCart([FromBody] AddToCartModel model)
@@ -169,11 +186,11 @@ namespace Shift_Tech.Controllers
                     UserId = user.Id,
                 };
             }
-            var product = await _context.Products.FindAsync(model.productId);
+            var product = await _context.Products.FindAsync(model.ProductId);
             var cartproduct = new CartProduct()
             {
                 Product = product,
-                ProductCount = model.productAmount
+                ProductCount = model.ProductAmount
             };
 
             var find = cart.Products.FirstOrDefault(x => x.Product.Id == cartproduct.Product.Id);
@@ -195,7 +212,28 @@ namespace Shift_Tech.Controllers
                     Console.WriteLine($"Exception: {e.Message}");
                 }
             }
+            _context.SaveChanges();
             return Ok("Success!");
+        }
+        [HttpPost]
+        public async Task<IActionResult> RemoveFromCart([FromBody] int productId)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var cart = GetCarts().FirstOrDefault(x => x.UserId == user.Id);
+            var product = cart.Products.First(x => x.Id == productId);
+            cart.Products.Remove(product);
+            _context.SaveChanges();
+            return Ok(new { Message = "Success!" });
+        }
+        [HttpPost]
+        public async Task<IActionResult> CartItemCountChange([FromBody] AddToCartModel model)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var cart = GetCarts().FirstOrDefault(x => x.UserId == user.Id);
+            var product = cart.Products.First(x => x.Id == model.ProductId);
+            product.ProductCount = model.ProductAmount;
+            _context.SaveChanges();
+            return Ok(new { Message = "Success!" });
         }
         [HttpGet]
         public async Task<IActionResult> Cart()
@@ -276,7 +314,7 @@ namespace Shift_Tech.Controllers
             ViewData["Categories"] = GetShopListCategories(products);
             ViewData["SelectedCategories"] = new List<Category>();
             ViewData["ProductRange"] = GetPriceRange(products);
-                return View();
+            return View();
         }
     }
 }

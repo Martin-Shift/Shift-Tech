@@ -11,3 +11,4 @@ namespace Shift_Tech.DbModels
         public Cart Cart { get; set; }
     }
 }
+ 

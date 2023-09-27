@@ -36,25 +36,25 @@
                         @foreach(var product in Model.Products)
                         {
                         <tr>
-                            <td class="align-middle"><img src="@product.Product.MainImage?.Url()" alt="" style="width: 50px;">@product.Product.Name</td>
-                            <td class="align-middle">$@product.Product.Price</td>
-                            <td class="align-middle">
-                                <div class="input-group quantity mx-auto" style="width: 100px;">
-                                    <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-primary btn-minus">
-                                            <i class="fa fa-minus"></i>
-                                        </button>
+                                <td class="align-middle"><img src="@product.Product.MainImage?.Url()" alt="" style="width: 50px;">@product.Product.Name</td>
+                                <td id="initialPrice-@product.Id" class="align-middle">$@product.Product.Price</td>
+                             <td class="align-middle">
+                                    <div class="input-group quantity mx-auto" style="width: 100px;">
+                                        <div  class="input-group-btn">
+                                            <button onclick="minusOne(@product.Id)" class="btn btn-sm btn-primary btn-minus">
+                                                <i class="fa fa-minus"></i>
+                                            </button>
+                                        </div>
+                                        <input onchange="handleInputChange(@product.Id)" id="Product-Count-@product.Id" type="text" class="form-control form-control-sm bg-secondary border-0 text-center" value="@product.ProductCount">
+                                        <div class="input-group-btn">
+                                            <button onclick="plusOne(@product.Id)" class="btn btn-sm btn-primary btn-plus">
+                                                <i class="fa fa-plus"></i>
+                                            </button>
+                                        </div>
                                     </div>
-                                    <input type="text" class="form-control form-control-sm bg-secondary border-0 text-center" value="@product.ProductCount">
-                                    <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-primary btn-plus">
-                                            <i class="fa fa-plus"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="align-middle">$@(product.Product.Price * product.ProductCount)</td>
-                            <td class="align-middle"><button class="btn btn-sm btn-danger"><i class="fa fa-times"></i></button></td>
+                                </td>
+                            <td id="totalPrice-@product.Id" class="align-middle">$@(product.Product.Price * product.ProductCount)</td>
+                            <td class="align-middle"><button onclick="removeFromCart(@product.Id)" class="btn btn-sm btn-danger"><i class="fa fa-times"></i></button></td>
                         </tr>
                         }
                     </tbody>
@@ -74,7 +74,7 @@
                     <div class="border-bottom pb-2">
                         <div class="d-flex justify-content-between mb-3">
                             <h6>Subtotal</h6>
-                            <h6>$@Model.Products.Sum(x=> x.ProductCount * x.Product.Price)</h6>
+                            <h6 id="SubTotal">$@Model.Products.Sum(x=> x.ProductCount * x.Product.Price)</h6>
                         </div>
                         <div class="d-flex justify-content-between">
                             <h6 class="font-weight-medium">Shipping</h6>
@@ -84,7 +84,7 @@
                     <div class="pt-2">
                         <div class="d-flex justify-content-between mt-2">
                             <h5>Total</h5>
-                             <h5>$@Model.Products.Sum(x=> x.ProductCount * x.Product.Price)</h5>
+                            <h5 id="Total">$@Model.Products.Sum(x=> x.ProductCount * x.Product.Price)</h5>
                         </div>
                         <button class="btn btn-block btn-primary font-weight-bold my-3 py-3">Proceed To Checkout</button>
                     </div>
@@ -92,8 +92,6 @@
             </div>
         </div>
     </div>
-    <!-- Cart End -->
-    <!-- Back to Top -->
     <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
 
     @section footer {
@@ -103,3 +101,105 @@
 </body>
 
 </html>
+<script>
+    function updatePrice(productId,productCount)
+    {
+        var oldPrice = document.getElementById(`totalPrice-${productId}`);
+        var oldTotalPrice =  document.getElementById("SubTotal");
+        var oldPriceText = oldPrice.textContent.replace('$', '').replace(',', '.');
+        var oldpricevalue = parseFloat(oldPriceText);
+        var newprice = parseFloat(document.getElementById(`initialPrice-${productId}`).textContent.replace('$', '').replace(',', '.')) * (productCount);
+        var totalprice = parseFloat(oldTotalPrice.textContent.replace('$', '').replace(',', '.'))
+        console.log(oldPrice)
+        console.log(oldPrice.textContent);
+        console.log(oldpricevalue);
+        console.log(newprice);
+        var minus = newprice - oldpricevalue;
+        totalprice += minus;
+        oldPrice.textContent = "$" + newprice;
+        oldTotalPrice.textContent = "$" + totalprice;
+        document.getElementById("Total").textContent = "$" + totalprice;
+    }
+    function removeFromCart(productId)
+    {
+        fetch("/Shop/RemoveFromCart", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(
+                productId)
+        })
+            .then(response => response.json())
+            .then(data => {
+               location.reload();
+            })
+            .catch(error => {
+                console.error("Fetch error:", error);
+            });
+    }
+    function handleInputChange(productId) {
+        var count = parseInt(document.getElementById("Product-Count").value)
+        fetch("/Shop/CartItemCountChange", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(
+                {
+                productId: productId,
+                productAmount: count
+                })
+        })
+            .then(response => response.json())
+            .then(data => {
+                updatePrice(productId, count)
+            })
+            .catch(error => {
+                console.error("Fetch error:", error);
+            });
+    }
+    function plusOne(productId) {
+        var count = parseInt(document.getElementById(`Product-Count-${productId}`).value)
+        fetch("/Shop/CartItemCountChange", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(
+                {
+                    productId: productId,
+                    productAmount: count+1
+                })
+        })
+            .then(response => response.json())
+            .then(data => {
+      
+                updatePrice(productId, count+1)
+            })
+            .catch(error => {
+                console.error("Fetch error:", error);
+            });
+    }
+    function minusOne(productId) {
+        var count = parseInt(document.getElementById(`Product-Count-${productId}`).value)
+        fetch("/Shop/CartItemCountChange", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(
+                {
+                    productId: productId,
+                    productAmount: count - 1
+                })
+        })
+            .then(response => response.json())
+            .then(data => {
+                updatePrice(productId, count - 1)
+            })
+            .catch(error => {
+                console.error("Fetch error:", error);
+            });
+    }
+</script>

@@ -20,7 +20,9 @@
 
     <link href="https://localhost:7166/lib/animate/animate.min.css" rel="stylesheet">
     <link href="https://localhost:7166/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
-
+    <link href="
+https://cdn.jsdelivr.net/npm/sweetalert2@11.7.31/dist/sweetalert2.min.css
+" rel="stylesheet">
     <link href="https://localhost:7166/css/style.css" rel="stylesheet">
     <title>@ViewData["Title"] - Shift Tech</title>
     @RenderSection("styles", required: false)
@@ -114,24 +116,6 @@
                         <h6 class="text-dark m-0"><i class="fa fa-bars mr-2"></i>Categories</h6>
                         <i class="fa fa-angle-down text-dark"></i>
                     </a>
-                    <nav class="collapse position-absolute navbar navbar-vertical navbar-light align-items-start p-0 bg-light" id="navbar-vertical" style="width: calc(100% - 30px); z-index: 999;">
-                        <div class="navbar-nav w-100">
-
-                            <a href="" class="nav-item nav-link">PCs</a>
-                            <a href="" class="nav-item nav-link">Laptops</a>
-                            <a href="" class="nav-item nav-link">Smartphones</a>
-                            <a href="" class="nav-item nav-link">Gaming</a>
-                            <a href="" class="nav-item nav-link">PC Components</a>
-                            <div class="nav-item dropdown dropright">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">PC Accessories <i class="fa fa-angle-right float-right mt-1"></i></a>
-                                <div class="dropdown-menu position-absolute rounded-0 border-0 m-0">
-                                    <a href="" class="dropdown-item">Monitors</a>
-                                    <a href="" class="dropdown-item">GPU</a>
-                                    <a href="" class="dropdown-item">Baby's Dresses</a>
-                                </div>
-                            </div>
-                        </div>
-                    </nav>
                 </div>
                 <div class="col-lg-9">
                     <nav class="navbar navbar-expand-lg bg-dark navbar-dark py-3 py-lg-0 px-0">
@@ -236,6 +220,9 @@
             </div>
         </div>
     </footer>
+    <script src="
+https://cdn.jsdelivr.net/npm/sweetalert2@11.7.31/dist/sweetalert2.all.min.js
+"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.min.js"></script>
 
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
@@ -283,6 +270,7 @@
                     // Handle errors if needed
                     console.error("Fetch error:", error);
                 });
+            
         });
     </script>
     @RenderSection("Scripts",required:false);

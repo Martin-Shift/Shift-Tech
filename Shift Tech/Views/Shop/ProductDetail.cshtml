@@ -4,6 +4,8 @@
 @{
     Layout = "_Layout";
     ViewData["Title"] = "Product Detail";
+    var isReviewed = ViewData["IsReviewed"];
+    var reviews = ViewData["Reviews"] as List<Review>;
     var isAdmin = User.IsInRole("admin");
     var product = Model.Product as Product;
     var productavg = product.Reviews.Count == 0 ? 0 : product.Reviews.Average(x => x.Rating);
@@ -12,9 +14,6 @@
 
 }
 
-@section Scripts {
-
-}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -62,15 +61,10 @@
                             {
                                 <small class="fa fa-star-half-alt text-primary mr-1"></small>
                             }
-                            @if (productavg % 1 < 0.4 && productavg != 0)
-                            {
-                                <small class="far fa-star text-primary mr-1"></small>
-                            }
                             @for (int i = 0; i < Convert.ToInt32(5 - productavg); i++)
                             {
                                 <small class="far fa-star text-primary mr-1"></small>
                             }
-                            <small>(@product.Reviews.Count)</small>
                         </div>
                         <small class="pt-1">(@product.Reviews.Count Reviews)</small>
                     </div>
@@ -95,7 +89,7 @@
                         <button class="btn btn-primary px-3" onclick="addToCart(@product.Id)">
                             <i class="fa fa-shopping-cart mr-1"></i> Add To
                             Cart
-                        </button>
+                        </button> <span class="ml-1">(@product.InStock in stock)</span>
                     </div>
                     <div class="d-flex pt-2">
                         <strong class="text-dark mr-2">Share on:</strong>
@@ -133,11 +127,11 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <h4 class="mb-4">@product.Reviews.Count reviews for "@product.Name"</h4>
-                                    @foreach(Review review in product.Reviews)
+                                    @foreach(Review review in reviews)
                                     {
 
                                     <div class="media mb-4">
-                                        <img src="@review.Publisher.Logo?.Url()" alt="Image" class="img-fluid mr-3 mt-1" style="width: 45px;">
+                                            <img src="@review.Publisher.Logo?.Url()" alt="Image" class="img-fluid mr-3 mt-1" style="width: 45px;      border-radius: 50%;">
                                         <div class="media-body">
                                             <h6>@review.Publisher.VisibleName<small> - <i>@review.Date.ToString("dd/MM/yyyy")</i></small></h6>
                                             <div class="text-primary mb-2">
@@ -149,10 +143,6 @@
                                                     {
                                                         <small class="fa fa-star-half-alt text-primary mr-1"></small>
                                                     }
-                                                    @if (review.Rating % 1 < 0.4 && review.Rating != 0)
-                                                    {
-                                                        <small class="far fa-star text-primary mr-1"></small>
-                                                    }
                                                     @for (int i = 0; i < Convert.ToInt32(5 - review.Rating); i++)
                                                     {
                                                         <small class="far fa-star text-primary mr-1"></small>
@@ -163,29 +153,38 @@
                                     </div>
                                     }
                                 </div>
-                                <div class="col-md-6">
-                                    <h4 class="mb-4">Leave a review</h4>
-                                    <div class="d-flex my-3">
-                                        <p class="mb-0 mr-2">Your Rating * :</p>
-                                        <div class="text-primary">
-                                            <i class="far fa-star"></i>
-                                            <i class="far fa-star"></i>
-                                            <i class="far fa-star"></i>
-                                            <i class="far fa-star"></i>
-                                            <i class="far fa-star"></i>
+                                @if (isReviewed.Equals(false))
+                                {
+                                    <div class="col-md-6">
+                                        <h4 class="mb-4">Leave a review</h4>
+                                        <div class="d-flex my-3">
+                                            <p class="mb-0 mr-2">Your Rating * :</p>
+                                            <div class="text-primary rating">
+                                                    <input type="radio" name="rating" id="rating-5">
+                                                    <label for="rating-5"></label>
+                                                    <input type="radio" name="rating" id="rating-4">
+                                                    <label for="rating-4"></label>
+                                                    <input type="radio" name="rating" id="rating-3">
+                                                    <label for="rating-3"></label>
+                                                    <input type="radio" name="rating" id="rating-2">
+                                                    <label for="rating-2"></label>
+                                                    <input type="radio" name="rating" id="rating-1">
+                                                    <label for="rating-1"></label>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <form>
-                                        <div class="form-group">
-                                            <label for="message">Your Review *</label>
-                                            <textarea id="message" cols="30" rows="5" class="form-control"></textarea>
-                                        </div>
+                                            <div class="form-group">
+                                                <label for="message">Your Review *</label>
+                                                <textarea id="message" cols="30" rows="5" class="form-control"></textarea>
+                                            </div>
 
-                                        <div class="form-group mb-0">
-                                            <input type="submit" value="Leave Your Review" class="btn btn-primary px-3">
-                                        </div>
-                                    </form>
-                                </div>
+                                            <div class="form-group mb-0">
+                                                <button onclick="addReview(@product.Id)" class="btn btn-primary px-3">
+                                                    <i class="fa mr-1"></i>Leave Review
+                                                </button>
+                                            </div>
+                                    
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>
@@ -199,7 +198,7 @@
             <div class="col">
                 <div class="owl-carousel related-carousel">
                     @foreach(Product item in Model.SameProducts){ 
-                    var tvg = item.Reviews.Count == 0 ? 0 : item.Reviews.Average(x => x.Rating);
+                    var itemavg = item.Reviews.Count == 0 ? 0 : item.Reviews.Average(x => x.Rating);
                     <div class="product-item bg-light">
                             <div class="card-image-container justify-content-center product-img position-relative overflow-hidden d-flex align-items-center">
                             0.
@@ -222,23 +221,19 @@
                             </div>
                                 <div class="d-flex align-items-center justify-content-center mb-1">
 
-                                    @for (int i = 0; i < Convert.ToInt32(productavg); i++)
+                                    @for (int i = 0; i < Convert.ToInt32(itemavg); i++)
                                     {
                                         <small class="fa fa-star text-primary mr-1"></small>
                                     }
-                                    @if (productavg % 1 >= 0.4)
+                                    @if (itemavg % 1 >= 0.4)
                                     {
                                         <small class="fa fa-star-half-alt text-primary mr-1"></small>
                                     }
-                                    @if (productavg % 1 < 0.4 && productavg != 0)
+                                    @for (int i = 0; i < Convert.ToInt32(5 - itemavg); i++)
                                     {
                                         <small class="far fa-star text-primary mr-1"></small>
                                     }
-                                    @for (int i = 0; i < Convert.ToInt32(5 - productavg); i++)
-                                    {
-                                        <small class="far fa-star text-primary mr-1"></small>
-                                    }
-                                    <small>(@product.Reviews.Count)</small>
+                                    <small>(@item.Reviews.Count)</small>
                                 </div>
                         </div>
                     </div>
@@ -247,85 +242,103 @@
             </div>
         </div>
     </div>
-    <!-- Products End -->
-    <!-- Back to Top -->
     <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
     @section footer {
 
     }
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.min.js"></script>
+    @section Scripts {
 
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
-    <script src="https://localhost:7166/lib/easing/easing.min.js"></script>
-    <script src="https://localhost:7166/lib/owlcarousel/owl.carousel.min.js"></script>
+        <script>
+            function addToCart(productId) {
+                var cartamount = document.getElementById("CartAmount").value;
+                const productCount = parseInt(cartamount);
 
-    <script src="https://localhost:7166/mail/jqBootstrapValidation.min.js"></script>
-    <script src="https://localhost:7166/mail/contact.js"></script>
-
-
-    <script src="https://localhost:7166/js/main.js"></script>
-    <script>
-        function addToCart(productId) {
-            var cartamount = document.getElementById("CartAmount").value;
-            const productCount = parseInt(cartamount);
-
-            fetch("/Shop/AddToCart", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ productId: productId, productAmount: productCount })
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error("Network response was not ok");
-                    }
-                    return response.json();
+                fetch("/Shop/AddToCart", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ productId: productId, productAmount: productCount })
                 })
-                .then(data => {
-                    document.getElementById("cartItemCount").textContent = data.cartItemCount;
-                })
-                .catch(error => {
-                    console.error("Fetch error:", error);
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("Network response was not ok");
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        document.getElementById("cartItemCount").textContent = data.cartItemCount;
+                    })
+                    .catch(error => {
+                        console.error("Fetch error:", error);
+                    });
+            }
+            const ratingInputs = document.querySelectorAll('.rating input');
+            var selectedRating = 0;
+            ratingInputs.forEach(input => {
+                input.addEventListener('change', () => {
+                    selectedRating = 5 - Array.from(ratingInputs).findIndex(radio => radio.checked);
+                    console.log(selectedRating);
                 });
-        }
-        document.addEventListener("DOMContentLoaded", function () {
-            const cartAmountInput = document.getElementById("CartAmount");
-            const minValue = 1;
-            const maxValue = @product.InStock;
-
-            cartAmountInput.addEventListener("input", function () {
-                let quantity = parseInt(cartAmountInput.value);
-
-                if (isNaN(quantity)) {
-                    quantity = minValue;
-                } else if (quantity < minValue) {
-                    quantity = minValue;
-                } else if (quantity > maxValue) {
-                    quantity = maxValue;
-                }
-
-                cartAmountInput.value = quantity;
             });
+            function addReview(productId) {
+                var description = document.getElementById('message').value;
+                fetch("/Shop/AddReview", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ productId: productId, description: description, rating: selectedRating })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        Swal.fire({
+                            title: 'Review Added!',
+                            icon: 'success'
+                        });
+                    })
+                    .catch(error => {
+                        console.error("Fetch error:", error);
+                    });
+            }
+            document.addEventListener("DOMContentLoaded", function () {
+                const cartAmountInput = document.getElementById("CartAmount");
+                const minValue = 1;
+                const maxValue = @product.InStock;
 
-            document.querySelector(".btn-minus").addEventListener("click", function () {
-                let quantity = parseInt(cartAmountInput.value);
-                if (quantity < minValue) {
-                    quantity = minValue;
-                }
-                cartAmountInput.value = quantity;
-            });
+                cartAmountInput.addEventListener("input", function () {
+                    let quantity = parseInt(cartAmountInput.value);
 
-            document.querySelector(".btn-plus").addEventListener("click", function () {
-                let quantity = parseInt(cartAmountInput.value);
-                if (quantity > maxValue) {
-                    quantity = maxValue;
-                }
-                cartAmountInput.value = quantity;
+                    if (isNaN(quantity)) {
+                        quantity = minValue;
+                    } else if (quantity < minValue) {
+                        quantity = minValue;
+                    } else if (quantity > maxValue) {
+                        quantity = maxValue;
+                    }
+
+                    cartAmountInput.value = quantity;
+                });
+
+                document.querySelector(".btn-minus").addEventListener("click", function () {
+                    let quantity = parseInt(cartAmountInput.value);
+                    if (quantity < minValue) {
+                        quantity = minValue;
+                    }
+                    cartAmountInput.value = quantity;
+                });
+
+                document.querySelector(".btn-plus").addEventListener("click", function () {
+                    let quantity = parseInt(cartAmountInput.value);
+                    if (quantity > maxValue) {
+                        quantity = maxValue;
+                    }
+                    cartAmountInput.value = quantity;
+                });
             });
-        });
-    </script>
+        </script>
+    }
+
 </body>
 
 </html>

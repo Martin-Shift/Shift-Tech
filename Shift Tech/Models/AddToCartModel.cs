@@ -2,7 +2,7 @@
 {
     public class AddToCartModel
     {
-        public int productId { get; set; }
-        public int productAmount { get; set; }
+        public int ProductId { get; set; }
+        public int ProductAmount { get; set; }
     }
 }

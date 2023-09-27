@@ -187,10 +187,6 @@
                                         {
                                             <small class="fa fa-star-half-alt text-primary mr-1"></small>
                                         }
-                                        @if (avg % 1 < 0.4 && avg != 0)
-                                        {
-                                            <small class="far fa-star text-primary mr-1"></small>
-                                        }
                                         @for (int i = 0; i < Convert.ToInt32(5 - avg); i++)
                                         {
                                             <small class="far fa-star text-primary mr-1"></small>
