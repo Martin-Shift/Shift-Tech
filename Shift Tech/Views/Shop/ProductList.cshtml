@@ -1,14 +1,14 @@
 ﻿@using Shift_Tech.Models
 @using Shift_Tech.DbModels
+@model Shift_Tech.ViewModels.ProductListViewModel;
 @{
     Layout = "_Layout";
     ViewData["Title"] = "Product List";
     var isAdmin = User.IsInRole("admin");
-    var products = ViewData["Products"] as List<Product>;
-    //var visibleProducts = products.Skip((Model.Filter.CurrentPage - 1) * 9).Take(9).ToList();
-    var pricerange = ViewData["PriceRange"] as PriceRange;
-    var categories = ViewData["Categories"] as List<Category>;
-
+    var products = Model.Products;
+    var pricerange = Model.PriceRange;
+    var categories = Model.Categories;
+    var selectedCategories = Model.SelectedCategories;
 }
 
 @section styles {
@@ -123,6 +123,9 @@
                             <input class="form_control_container__time__input" type="number" id="toInput" value="@pricerange.EndPrice" min="@pricerange.StartPrice" max="@pricerange.EndPrice" />
                         </div>
                     </div>
+                    <button class="btn btn-primary px-3 mt-2" onclick="FilterByPrice()">
+                        <i class="fa mr-1"></i> Apply Changes
+                    </button>
                 </div>
                 <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Filter by Categories</span></h5>
                 <div class="bg-light p-4 mb-30">
@@ -130,7 +133,14 @@
                         @foreach (Category category in categories)
                         {
                             <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                                <input type="checkbox" class="custom-control-input" id="category-@category.Id">
+                                @if (selectedCategories.Any(x => x.Id == category.Id))
+                                {
+                                    <input type="checkbox" class="custom-control-input" id="category-@category.Id" checked>
+                                }
+                                @if (!selectedCategories.Any(x => x.Id == category.Id))
+                                {
+                                    <input type="checkbox" class="custom-control-input" id="category-@category.Id">
+                                }
                                 <label class="custom-control-label" id="category-@category.Id">@category.Name</label>
                                 <span class="badge border font-weight-normal">@category.Products.Count</span>
                             </div>
@@ -159,44 +169,7 @@
                     </div>
                     @foreach (Product product in products)
                     {
-                        var avg = product.Reviews.Count == 0 ? 0 : product.Reviews.Average(x => x.Rating);
-                        <div class="col-lg-4 col-md-6 col-sm-6 pb-1">
-                            <div class="  justify-content-center product-item bg-light mb-4">
-                                <div class="card-image-container justify-content-center product-img position-relative overflow-hidden d-flex align-items-center">
-                                    <img class="img-fluid w-100" src="@product.MainImage?.Url()" alt="">
-                                    <div class="product-action">
-                                        <a class="btn btn-outline-dark btn-square add-to-cart-button" onclick="addToCart(@product.Id)"><i class="fa fa-shopping-cart"></i></a>
-                                        <a class="btn btn-outline-dark btn-square" href="@Url.Action("ProductDetail", "Shop", new { id = product.Id })"><i class="fa fa-search"></i></a>
-                                    </div>
-                                </div>
-                                <div class="text-center py-4">
-                                    <a class="h6 text-decoration-none text-truncate" href="">@product.Name</a>
-                                    <div class="d-flex align-items-center justify-content-center mt-2">
-                                        <h5>$@product.Price</h5>
-                                        @if (product.Price != product.PreviousPrice)
-                                        {
-                                            <h6 class="text-muted ml-2"><del>$@product.PreviousPrice</del></h6>
-                                        }
-                                    </div>
-                                    <div class="d-flex align-items-center justify-content-center mb-1">
-                                        @for (int i = 0; i < Convert.ToInt32(avg); i++)
-                                        {
-                                            <small class="fa fa-star text-primary mr-1"></small>
-                                        }
-                                        @if (avg % 1 >= 0.4)
-                                        {
-                                            <small class="fa fa-star-half-alt text-primary mr-1"></small>
-                                        }
-                                        @for (int i = 0; i < Convert.ToInt32(5 - avg); i++)
-                                        {
-                                            <small class="far fa-star text-primary mr-1"></small>
-                                        }
-                                        <small>(@product.Reviews.Count)</small>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
+                        @Html.Partial("_ProductListPartial", product)
                     }
                     <div class="col-12">
                         <nav>
@@ -218,127 +191,149 @@
     @section footer {
 
     }
-    <script>
 
-        function addToCart(productId) {
-            const productCount = 1;
+    @section Scripts {
+        <script>
 
-            fetch("/Shop/AddToCart", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(
-                    {
-                        productId: productId,
-                        productAmount: productCount
+            function addToCart(productId) {
+                const productCount = 1;
+
+                fetch("/Shop/AddToCart", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(
+                        {
+                            productId: productId,
+                            productAmount: productCount
+                        })
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("Network response was not ok");
+                        }
+                        return response.json();
                     })
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error("Network response was not ok");
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    document.getElementById("cartItemCount").textContent = data.cartItemCount;
-                })
-                .catch(error => {
-                    console.error("Fetch error:", error);
-                });
-        }
-
-        function controlFromInput(fromSlider, fromInput, toInput, controlSlider) {
-            const [from, to] = getParsed(fromInput, toInput);
-            fillSlider(fromInput, toInput, '#C6C6C6', '#25daa5', controlSlider);
-            if (from > to) {
-                fromSlider.value = to;
-                fromInput.value = to;
-            } else {
-                fromSlider.value = from;
+                    .then(data => {
+                        document.getElementById("cartItemCount").textContent = data.cartItemCount;
+                    })
+                    .catch(error => {
+                        console.error("Fetch error:", error);
+                    });
             }
-        }
 
-        function controlToInput(toSlider, fromInput, toInput, controlSlider) {
-            const [from, to] = getParsed(fromInput, toInput);
-            fillSlider(fromInput, toInput, '#C6C6C6', '#25daa5', controlSlider);
-            setToggleAccessible(toInput);
-            if (from <= to) {
-                toSlider.value = to;
-                toInput.value = to;
-            } else {
-                toInput.value = from;
+            function FilterByPrice() {
+                const fromInput = document.getElementById("fromInput");
+                const toInput = document.getElementById("toInput");
+
+                const minPrice = parseFloat(fromInput.value);
+                const maxPrice = parseFloat(toInput.value);
+
+                fetch(`/Shop/FilterByPrice?minPrice=${minPrice}&maxPrice=${maxPrice}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("Network response was not ok");
+                        }
+                        return response.text();
+                    })
+                    .then(data => {
+                        document.getElementById("productListContainer").innerHTML = data;
+                    })
+                    .catch(error => {
+                        console.error("Fetch error:", error);
+                    });
             }
-        }
 
-        function controlFromSlider(fromSlider, toSlider, fromInput) {
-            const [from, to] = getParsed(fromSlider, toSlider);
-            fillSlider(fromSlider, toSlider, '#C6C6C6', '#25daa5', toSlider);
-            if (from > to) {
-                fromSlider.value = to;
-                fromInput.value = to;
-            } else {
-                fromInput.value = from;
+            function controlFromInput(fromSlider, fromInput, toInput, controlSlider) {
+                const [from, to] = getParsed(fromInput, toInput);
+                fillSlider(fromInput, toInput, '#C6C6C6', '#25daa5', controlSlider);
+                if (from > to) {
+                    fromSlider.value = to;
+                    fromInput.value = to;
+                } else {
+                    fromSlider.value = from;
+                }
             }
-        }
 
-        function controlToSlider(fromSlider, toSlider, toInput) {
-            const [from, to] = getParsed(fromSlider, toSlider);
+            function controlToInput(toSlider, fromInput, toInput, controlSlider) {
+                const [from, to] = getParsed(fromInput, toInput);
+                fillSlider(fromInput, toInput, '#C6C6C6', '#25daa5', controlSlider);
+                setToggleAccessible(toInput);
+                if (from <= to) {
+                    toSlider.value = to;
+                    toInput.value = to;
+                } else {
+                    toInput.value = from;
+                }
+            }
+
+            function controlFromSlider(fromSlider, toSlider, fromInput) {
+                const [from, to] = getParsed(fromSlider, toSlider);
+                fillSlider(fromSlider, toSlider, '#C6C6C6', '#25daa5', toSlider);
+                if (from > to) {
+                    fromSlider.value = to;
+                    fromInput.value = to;
+                } else {
+                    fromInput.value = from;
+                }
+            }
+
+            function controlToSlider(fromSlider, toSlider, toInput) {
+                const [from, to] = getParsed(fromSlider, toSlider);
+                fillSlider(fromSlider, toSlider, '#C6C6C6', '#25daa5', toSlider);
+                setToggleAccessible(toSlider);
+                if (from <= to) {
+                    toSlider.value = to;
+                    toInput.value = to;
+                } else {
+                    toInput.value = from;
+                    toSlider.value = from;
+                }
+            }
+
+            function getParsed(currentFrom, currentTo) {
+                const from = parseInt(currentFrom.value, 10);
+                const to = parseInt(currentTo.value, 10);
+                return [from, to];
+            }
+
+            function fillSlider(from, to, sliderColor, rangeColor, controlSlider) {
+                const rangeDistance = to.max - to.min;
+                const fromPosition = from.value - to.min;
+                const toPosition = to.value - to.min;
+                controlSlider.style.background = `linear-gradient(
+                                                              to right,
+                                                              ${sliderColor} 0%,
+                                                              ${sliderColor} ${(fromPosition) / (rangeDistance) * 100}%,
+                                                              ${rangeColor} ${((fromPosition) / (rangeDistance)) * 100}%,
+                                                              ${rangeColor} ${(toPosition) / (rangeDistance) * 100}%,
+                                                              ${sliderColor} ${(toPosition) / (rangeDistance) * 100}%,
+                                                              ${sliderColor} 100%)`;
+            }
+
+            function setToggleAccessible(currentTarget) {
+                const toSlider = document.querySelector('#toSlider');
+                if (Number(currentTarget.value) <= 0) {
+                    toSlider.style.zIndex = 2;
+                } else {
+                    toSlider.style.zIndex = 0;
+                }
+            }
+
+            const fromSlider = document.querySelector('#fromSlider');
+            const toSlider = document.querySelector('#toSlider');
+            const fromInput = document.querySelector('#fromInput');
+            const toInput = document.querySelector('#toInput');
             fillSlider(fromSlider, toSlider, '#C6C6C6', '#25daa5', toSlider);
             setToggleAccessible(toSlider);
-            if (from <= to) {
-                toSlider.value = to;
-                toInput.value = to;
-            } else {
-                toInput.value = from;
-                toSlider.value = from;
-            }
-        }
 
-        function getParsed(currentFrom, currentTo) {
-            const from = parseInt(currentFrom.value, 10);
-            const to = parseInt(currentTo.value, 10);
-            return [from, to];
-        }
+            fromSlider.oninput = () => controlFromSlider(fromSlider, toSlider, fromInput);
+            toSlider.oninput = () => controlToSlider(fromSlider, toSlider, toInput);
+            fromInput.oninput = () => controlFromInput(fromSlider, fromInput, toInput, toSlider);
+            toInput.oninput = () => controlToInput(toSlider, fromInput, toInput, toSlider);
 
-        function fillSlider(from, to, sliderColor, rangeColor, controlSlider) {
-            const rangeDistance = to.max - to.min;
-            const fromPosition = from.value - to.min;
-            const toPosition = to.value - to.min;
-            controlSlider.style.background = `linear-gradient(
-                              to right,
-                              ${sliderColor} 0%,
-                              ${sliderColor} ${(fromPosition) / (rangeDistance) * 100}%,
-                              ${rangeColor} ${((fromPosition) / (rangeDistance)) * 100}%,
-                              ${rangeColor} ${(toPosition) / (rangeDistance) * 100}%,
-                              ${sliderColor} ${(toPosition) / (rangeDistance) * 100}%,
-                              ${sliderColor} 100%)`;
-        }
-
-        function setToggleAccessible(currentTarget) {
-            const toSlider = document.querySelector('#toSlider');
-            if (Number(currentTarget.value) <= 0) {
-                toSlider.style.zIndex = 2;
-            } else {
-                toSlider.style.zIndex = 0;
-            }
-        }
-
-        const fromSlider = document.querySelector('#fromSlider');
-        const toSlider = document.querySelector('#toSlider');
-        const fromInput = document.querySelector('#fromInput');
-        const toInput = document.querySelector('#toInput');
-        fillSlider(fromSlider, toSlider, '#C6C6C6', '#25daa5', toSlider);
-        setToggleAccessible(toSlider);
-
-        fromSlider.oninput = () => controlFromSlider(fromSlider, toSlider, fromInput);
-        toSlider.oninput = () => controlToSlider(fromSlider, toSlider, toInput);
-        fromInput.oninput = () => controlFromInput(fromSlider, fromInput, toInput, toSlider);
-        toInput.oninput = () => controlToInput(toSlider, fromInput, toInput, toSlider);
-
-    </script>
-    @section Scripts {
-
+        </script>
     }
 </body>
 

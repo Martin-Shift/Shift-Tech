@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Shift_Tech.DbModels;
 
@@ -10,9 +11,11 @@ using Shift_Tech.DbModels;
 namespace Shift_Tech.Migrations
 {
     [DbContext(typeof(ShopDbContext))]
-    partial class ShopDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230927175213_Checkout")]
+    partial class Checkout
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.11");
@@ -162,9 +165,6 @@ namespace Shift_Tech.Migrations
                     b.Property<int?>("CartUserId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("CheckoutId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int>("ProductCount")
                         .HasColumnType("INTEGER");
 
@@ -174,8 +174,6 @@ namespace Shift_Tech.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CartUserId");
-
-                    b.HasIndex("CheckoutId");
 
                     b.HasIndex("ProductId");
 
@@ -256,6 +254,9 @@ namespace Shift_Tech.Migrations
                     b.Property<int>("CategoryId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("CheckoutId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("CreatorId")
                         .HasColumnType("INTEGER");
 
@@ -288,6 +289,8 @@ namespace Shift_Tech.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
+
+                    b.HasIndex("CheckoutId");
 
                     b.HasIndex("CreatorId");
 
@@ -469,10 +472,6 @@ namespace Shift_Tech.Migrations
                         .WithMany("Products")
                         .HasForeignKey("CartUserId");
 
-                    b.HasOne("Shift_Tech.DbModels.Checkout", null)
-                        .WithMany("Products")
-                        .HasForeignKey("CheckoutId");
-
                     b.HasOne("Shift_Tech.DbModels.Product", "Product")
                         .WithMany("Purchases")
                         .HasForeignKey("ProductId")
@@ -524,6 +523,10 @@ namespace Shift_Tech.Migrations
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Shift_Tech.DbModels.Checkout", null)
+                        .WithMany("Products")
+                        .HasForeignKey("CheckoutId");
 
                     b.HasOne("Shift_Tech.DbModels.User", "Creator")
                         .WithMany("CreatedProducts")

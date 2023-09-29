@@ -118,7 +118,6 @@ namespace Shift_Tech.Controllers
 
             return RedirectToAction("ShowProductDetail", new { productId = id });
         }
-
         [HttpGet]
         public IActionResult GetTopCategoriesView() =>
             View(
@@ -253,22 +252,25 @@ namespace Shift_Tech.Controllers
         //Product List
         public async Task<IActionResult> ProductList()
         {
-            ViewData["Products"] = GetProducts();
-            ViewData["Categories"] = GetShopListCategories(GetProducts());
-            ViewData["SelectedCategories"] = new List<Category>();
-            ViewData["PriceRange"] = GetPriceRange(GetProducts());
-            return View();
+            var viewModel = new ProductListViewModel
+            {
+                Products = GetProducts(),
+                Categories = GetShopListCategories(GetProducts()),
+                SelectedCategories = new List<Category>(),
+                PriceRange = GetPriceRange(GetProducts())
+            };
+            return View(viewModel);
         }
-        //Filter by Price
-        public async Task<IActionResult> ProductList(PriceRange filter)
+
+        public IActionResult FilterByPrice(double minPrice, double maxPrice)
         {
-            var products = GetProducts();
-            var categories = ViewData["SelectedCategories"] as List<Category>;
-            products = FilterProductsByCategory(products, categories);
-            ViewData["Products"] = FilterProductsByPrice(products, filter);
-            ViewData["PriceRange"] = filter;
-            return Ok();
+            var range = new PriceRange() { StartPrice = (int)minPrice, EndPrice = (int)maxPrice };
+            var filteredProducts = FilterProductsByPrice(GetProducts(),range);
+
+            return PartialView("_ProductListPartial", filteredProducts);
         }
+
+
         //Filter by Category
         public async Task<IActionResult> ProductList(List<Category> selectedCategories)
         {
