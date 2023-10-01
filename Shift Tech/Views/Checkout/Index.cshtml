@@ -1,8 +1,8 @@
 ﻿@model Shift_Tech.DbModels.Cart;
 @{
     Layout = "_Layout";
-    var subtotal = Model.Products.Sum(x => x.Product.Price * x.ProductCount);
-    var shippingPrice = subtotal / 5;
+    var subtotal = Math.Floor(Model.Products.Sum(x => x.Product.Price * x.ProductCount) * 100) / 100;
+    var shippingPrice = Math.Floor(subtotal / 30 * 100) / 100;
 }
 
 <head>
@@ -182,7 +182,7 @@
                         @foreach(var product in Model.Products){
                         <div class="d-flex justify-content-between">
                             <p>@product.Product.Name (@product.ProductCount)</p>
-                            <p>$@product.Product.Price * @product.ProductCount</p>
+                                <p>$@(Math.Floor(product.Product.Price * product.ProductCount * 100) / 100)</p>
                         </div>
                         }
                     </div>
@@ -199,7 +199,7 @@
                     <div class="pt-2">
                         <div class="d-flex justify-content-between mt-2">
                             <h5>Total</h5>
-                            <h5>$@subtotal + @shippingPrice</h5>
+                            <h5>$@(subtotal + shippingPrice)</h5>
                         </div>
                     </div>
                 </div>

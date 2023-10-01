@@ -129,23 +129,14 @@
                 </div>
                 <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Filter by Categories</span></h5>
                 <div class="bg-light p-4 mb-30">
-                    <form>
-                        @foreach (Category category in categories)
-                        {
-                            <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                                @if (selectedCategories.Any(x => x.Id == category.Id))
-                                {
-                                    <input type="checkbox" class="custom-control-input" id="category-@category.Id" checked>
-                                }
-                                @if (!selectedCategories.Any(x => x.Id == category.Id))
-                                {
-                                    <input type="checkbox" class="custom-control-input" id="category-@category.Id">
-                                }
-                                <label class="custom-control-label" id="category-@category.Id">@category.Name</label>
-                                <span class="badge border font-weight-normal">@category.Products.Count</span>
-                            </div>
-                        }
-                    </form>
+                    @foreach (Category category in categories)
+                    {
+                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                            <input type="checkbox" class="custom-control-input category-checkbox" data-id="@category.Id" id="price-@category.Id" onchange="categoriesUpdate()">
+                            <label class="custom-control-label" for="price-@category.Id">@category.Name</label>
+                            <span class="badge border font-weight-normal">@category.Products.Count</span>
+                        </div>
+                    }
                 </div>
 
             </div>
@@ -157,28 +148,27 @@
                                 <div class="btn-group">
                                     <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">Sorting</button>
                                     <div class="dropdown-menu dropdown-menu-right">
-                                        <a class="dropdown-item" href="#">Popularity</a>
-                                        <a class="dropdown-item" href="#">Recent</a>
-                                        <a class="dropdown-item" href="#">Cheapest to Expensive</a>
-                                        <a class="dropdown-item" href="#">Expensive to Cheapest</a>
-                                        <a class="dropdown-item" href="#">Best Rating</a>
+                                        <button class="dropdown-item" onclick="sortSelect(0)">Popularity</button>
+                                        <button class="dropdown-item" onclick="sortSelect(1)">Recent</button>
+                                        <button class="dropdown-item" onclick="sortSelect(2)">Cheapest to Expensive</button>
+                                        <button class="dropdown-item" onclick="sortSelect(3)">Expensive to Cheapest</button>
+                                        <button class="dropdown-item" onclick="sortSelect(4)">Best Rating</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    @foreach (Product product in products)
-                    {
-                        @Html.Partial("_ProductListPartial", product)
-                    }
+                    <div class="col-12 pb-1">
+                        <div class="row" id="Product-list">
+                            @Html.Partial("_ProductListPartial",products)
+                        </div>
+                    </div>
                     <div class="col-12">
                         <nav>
                             <ul class="pagination justify-content-center">
-                                <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
-                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                                <li class="page-item active"><a data-page="1" class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a data-page="2" class="page-link" href="#">2</a></li>
+                                <li class="page-item"><a data-page="3" class="page-link" href="#">3</a></li>
                             </ul>
                         </nav>
                     </div>
@@ -194,7 +184,61 @@
 
     @section Scripts {
         <script>
+            var filter = {
+                minPrice: 0,
+                maxPrice: 100000,
+                selectedCategories: [],
+                search: '',
+                page: 1,
+                sortOption: 0,
+            }
+            function updateProducts() {
+                fetch(`/Shop/FilterProducts`,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(filter)
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("Network response was not ok");
+                        }
+                        return response.text();
+                    })
+                    .then(data => {
+                        document.getElementById("Product-list").innerHTML = data;
+                    })
+                    .catch(error => {
+                        console.error("Fetch error:", error);
+                    });
+            }
+            function sortSelect(id)
+            {
+                filter.sortOption = id;
+                updateProducts();
+            }
+            document.getElementById("search-products").addEventListener("click", e => {
 
+                var text = document.getElementById("search-products-text").value;
+                console.log(text);
+                filter.search = text;
+                updateProducts();
+            });
+
+            function categoriesUpdate() {
+                var checkboxes = document.querySelectorAll('.category-checkbox')
+                var checkedCategories = Array.from(checkboxes)
+                    .filter(checkbox => checkbox.checked)
+                    .map(checkbox => {
+                        return parseInt(checkbox.getAttribute("data-id"));
+                    })
+                console.log(checkedCategories);
+
+                filter.selectedCategories = checkedCategories;
+                updateProducts();
+            }
             function addToCart(productId) {
                 const productCount = 1;
 
@@ -222,27 +266,18 @@
                         console.error("Fetch error:", error);
                     });
             }
-
+            $("a[data-page]").on("click", e => {
+                e.preventDefault();
+                let page = $(e.target).data("page")
+                filter.page = page
+                updateProducts()
+            });
             function FilterByPrice() {
                 const fromInput = document.getElementById("fromInput");
                 const toInput = document.getElementById("toInput");
-
-                const minPrice = parseFloat(fromInput.value);
-                const maxPrice = parseFloat(toInput.value);
-
-                fetch(`/Shop/FilterByPrice?minPrice=${minPrice}&maxPrice=${maxPrice}`)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error("Network response was not ok");
-                        }
-                        return response.text();
-                    })
-                    .then(data => {
-                        document.getElementById("productListContainer").innerHTML = data;
-                    })
-                    .catch(error => {
-                        console.error("Fetch error:", error);
-                    });
+                filter.minPrice = parseFloat(fromInput.value) - 1;
+                filter.maxPrice = parseFloat(toInput.value) + 1;
+                updateProducts()
             }
 
             function controlFromInput(fromSlider, fromInput, toInput, controlSlider) {
@@ -303,13 +338,13 @@
                 const fromPosition = from.value - to.min;
                 const toPosition = to.value - to.min;
                 controlSlider.style.background = `linear-gradient(
-                                                              to right,
-                                                              ${sliderColor} 0%,
-                                                              ${sliderColor} ${(fromPosition) / (rangeDistance) * 100}%,
-                                                              ${rangeColor} ${((fromPosition) / (rangeDistance)) * 100}%,
-                                                              ${rangeColor} ${(toPosition) / (rangeDistance) * 100}%,
-                                                              ${sliderColor} ${(toPosition) / (rangeDistance) * 100}%,
-                                                              ${sliderColor} 100%)`;
+                                                                                                                          to right,
+                                                                                                                          ${sliderColor} 0%,
+                                                                                                                          ${sliderColor} ${(fromPosition) / (rangeDistance) * 100}%,
+                                                                                                                          ${rangeColor} ${((fromPosition) / (rangeDistance)) * 100}%,
+                                                                                                                          ${rangeColor} ${(toPosition) / (rangeDistance) * 100}%,
+                                                                                                                          ${sliderColor} ${(toPosition) / (rangeDistance) * 100}%,
+                                                                                                                          ${sliderColor} 100%)`;
             }
 
             function setToggleAccessible(currentTarget) {
@@ -320,19 +355,6 @@
                     toSlider.style.zIndex = 0;
                 }
             }
-
-            const fromSlider = document.querySelector('#fromSlider');
-            const toSlider = document.querySelector('#toSlider');
-            const fromInput = document.querySelector('#fromInput');
-            const toInput = document.querySelector('#toInput');
-            fillSlider(fromSlider, toSlider, '#C6C6C6', '#25daa5', toSlider);
-            setToggleAccessible(toSlider);
-
-            fromSlider.oninput = () => controlFromSlider(fromSlider, toSlider, fromInput);
-            toSlider.oninput = () => controlToSlider(fromSlider, toSlider, toInput);
-            fromInput.oninput = () => controlFromInput(fromSlider, fromInput, toInput, toSlider);
-            toInput.oninput = () => controlToInput(toSlider, fromInput, toInput, toSlider);
-
         </script>
     }
 </body>

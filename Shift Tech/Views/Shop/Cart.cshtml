@@ -1,12 +1,14 @@
 ﻿@model Shift_Tech.DbModels.Cart;
 @{
     Layout = "_Layout";
-    var subtotal = Model.Products.Sum(x => x.ProductCount * x.Product.Price);
-    var shippingprice = subtotal / 30;
+    var subtotal = Math.Floor(Model.Products.Sum(x => x.ProductCount * x.Product.Price)*100) / 100;
+    double shippingprice = Math.Floor(subtotal / 30 * 100)/ 100;
+
     if(shippingprice >=1500)
     {
         shippingprice = 0;
     }
+
 }
 @section styles {
 
@@ -59,7 +61,7 @@
                                         </div>
                                     </div>
                                 </td>
-                            <td id="totalPrice-@product.Id" class="align-middle">$@(product.Product.Price * product.ProductCount)</td>
+                            <td id="totalPrice-@product.Id" class="align-middle">$@(Math.Floor((product.Product.Price * product.ProductCount)*100)/100)</td>
                             <td class="align-middle"><button onclick="removeFromCart(@product.Id)" class="btn btn-sm btn-danger"><i class="fa fa-times"></i></button></td>
                         </tr>
                         }
@@ -67,14 +69,6 @@
                 </table>
             </div>
             <div class="col-lg-4">
-                <form class="mb-30" action="">
-                    <div class="input-group">
-                        <input type="text" class="form-control border-0 p-4" placeholder="Coupon Code">
-                        <div class="input-group-append">
-                            <button class="btn btn-primary">Apply Coupon</button>
-                        </div>
-                    </div>
-                </form>
                 <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Cart Summary</span></h5>
                 <div class="bg-light p-30 mb-5">
                     <div class="border-bottom pb-2">
@@ -90,7 +84,7 @@
                     <div class="pt-2">
                         <div class="d-flex justify-content-between mt-2">
                             <h5>Total</h5>
-                            <h5 id="Total">$@(subtotal + shippingprice)</h5>
+                            <h5 id="Total">$@(Math.Floor((subtotal + shippingprice)*100)/100)</h5>
                         </div>
                         <a href="@Url.Action("Index", "Checkout")" class="btn btn-block btn-primary font-weight-bold my-3 py-3">Proceed To Checkout</a>
                     </div>
@@ -123,11 +117,11 @@
         console.log(newprice);
         var minus = newprice - oldpricevalue;
         totalprice += minus;
-        oldPrice.textContent = "$" + newprice;
-        oldTotalPrice.textContent = "$" + totalprice;
+        oldPrice.textContent = "$" + Math.floor(newprice * 100) /100;
+        oldTotalPrice.textContent = "$" + Math.floor(totalprice * 100) / 100;
         var Shipping = document.getElementById("Shipping");
-        Shipping.textContent = "$" + (totalprice/30);
-        document.getElementById("Total").textContent = "$" + totalprice + (totalprice/30);
+        Shipping.textContent = "$" + Math.floor((totalprice / 30)*100)/100;
+        document.getElementById("Total").textContent = "$" + Math.floor((totalprice + (totalprice / 30)) * 100) / 100;
 
     }
     function removeFromCart(productId)

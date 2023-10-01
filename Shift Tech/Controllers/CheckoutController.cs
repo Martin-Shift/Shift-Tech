@@ -36,10 +36,11 @@ namespace Shift_Tech.Controllers
                  .ThenInclude(product => product.Images)
                  .ToList();
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var user = _userManager.GetUserAsync(User);
-            var cart = GetCarts().First(x => x.UserId == user.Id);
+            var user = await _userManager.GetUserAsync(User);
+            var carts = GetCarts();
+            var cart = carts.First(x => x.User.Id == user.Id);
          
             return View(cart);
         }
