@@ -9,10 +9,11 @@ namespace Shift_Tech.DbModels
 
     public class Order
     {
-        public Guid Guid { get; set; }
+        public string Guid { get; set; }
         public int Id { get; set; }
         public User User { get; set; }
 		public virtual ICollection<OrderProduct> Products { get; set; }
+        public DateTime CreationDate { get; set; }
 		public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Country { get; set; }

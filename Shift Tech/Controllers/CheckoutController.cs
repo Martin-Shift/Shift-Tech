@@ -55,9 +55,10 @@ namespace Shift_Tech.Controllers
 			var cart = GetCarts().First(x => x.User.Id == user.Id);
 
 			var products = cart.Products.Select(x => new OrderProduct() { Product = x.Product, ProductCount = x.ProductCount }).ToList();
-			order.Guid = Guid.NewGuid();
+			order.Guid = Guid.NewGuid().ToString();
 			order.User = user;
 			order.Email = user.Email;
+			order.CreationDate = DateTime.Now;
 			order.Status = Status.NotPaid;
 			order.Products = products;
 			_context.Orders.Add(order);
@@ -67,7 +68,7 @@ namespace Shift_Tech.Controllers
 		public async Task<IActionResult> Payment(int orderId)
 		{
 			var order = _context.Orders.Include(x => x.Products).ThenInclude(x => x.Product).FirstOrDefault(x => x.Id == orderId);
-			var param = _liqPay.PayParams(Convert.ToDecimal(Math.Floor((order.TotalPrice() + order.TotalPrice() / 30) * 100) / 100), "Order products", order.Guid.ToString());
+			var param = _liqPay.PayParams(Convert.ToDecimal(Math.Floor((order.TotalPrice() + order.TotalPrice() / 30) * 100) / 100), "Order products", order.Guid);
 			ViewData["order"] = orderId;
 			ViewData["data"] = _liqPay.GetData(param);
 			ViewData["signature"] = _liqPay.GetSignature(param);
