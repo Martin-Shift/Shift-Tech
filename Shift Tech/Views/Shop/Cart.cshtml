@@ -86,7 +86,10 @@
                             <h5>Total</h5>
                             <h5 id="Total">$@(Math.Floor((subtotal + shippingprice)*100)/100)</h5>
                         </div>
-                        <a href="@Url.Action("Index", "Checkout")" class="btn btn-block btn-primary font-weight-bold my-3 py-3">Proceed To Checkout</a>
+                        @if (Model.Products.Count > 0)
+                        {
+                            <a href="@Url.Action("Index", "Checkout")" class="btn btn-block btn-primary font-weight-bold my-3 py-3">Proceed To Checkout</a>
+                        }
                     </div>
                 </div>
             </div>

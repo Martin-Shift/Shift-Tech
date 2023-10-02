@@ -5,13 +5,80 @@
     ViewData["Title"] = "Manage Products";
     Layout = "_AdminLayout";
 }
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css">
-@section styles {
+@section Styles {
 
 }
 
-@section Scripts {
+@section scripts {
+    <script>
+        function addProduct() {
+            // Gather data from the form fields
+            const productName = document.getElementById("NewProductName").value;
+            const productPrice = parseFloat(document.getElementById("NewProductPrice").value);
+            const categoryId = parseInt(document.getElementById("NewProductCategory").value);
+            fetch("/Product/AddProduct", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    name: productName,
+                    price: productPrice,
+                    categoryId: categoryId
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    location.reload();
+                })
+                .catch(error => {
+                    location.reload();
+                });
+        }
+        function confirmDelete(productId, productName) {
+            Swal.fire({
+                title: 'Delete Product',
+                text: `Are you sure you want to delete the product '${productName}'?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                confirmButtonText: 'Delete',
+                showLoaderOnConfirm: true,
+                preConfirm: () => {
+                    return fetch("/Product/DeleteProduct", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(productId)
+                    })
+                        .then(response => {
+                            if (response.message = "Success!") {
+                                Swal.fire({
+                                    title: 'Product Deleted!',
+                                    icon: 'success'
+                                });
+                                location.reload();
+                            } else {
+                                Swal.fire({
+                                    title: 'Error Deleting Product',
+                                    text: response.statusText,
+                                    icon: 'error'
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            Swal.fire({
+                                title: 'Network Error',
+                                text: error.message,
+                                icon: 'error'
+                            });
+                        });
+                },
+                allowOutsideClick: () => !Swal.isLoading()
+            });
+        }
+    </script>
 
 }
 @section header {
@@ -70,72 +137,3 @@
 
 </div>
 
-<script>
-    function addProduct() {
-        // Gather data from the form fields
-        const productName = document.getElementById("NewProductName").value;
-        const productPrice = parseFloat(document.getElementById("NewProductPrice").value);
-        const categoryId = parseInt(document.getElementById("NewProductCategory").value);
-        fetch("/Product/AddProduct", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                name: productName,
-                price: productPrice,
-                categoryId: categoryId
-            })
-        })
-            .then(response => response.json())
-            .then(data => {
-                location.reload();
-            })
-            .catch(error => {
-               location.reload();
-            });
-    }
-    function confirmDelete(productId, productName) {
-        Swal.fire({
-            title: 'Delete Product',
-            text: `Are you sure you want to delete the product '${productName}'?`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            confirmButtonText: 'Delete',
-            showLoaderOnConfirm: true,
-            preConfirm: () => {
-                return fetch("/Product/DeleteProduct", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(productId)
-                })
-                    .then(response => {
-                        if (response.message="Success!") {
-                            Swal.fire({
-                                title: 'Product Deleted!',
-                                icon: 'success'
-                            });
-                            location.reload();
-                        } else {
-                            Swal.fire({
-                                title: 'Error Deleting Product',
-                                text: response.statusText,
-                                icon: 'error'
-                            });
-                        }
-                    })
-                    .catch(error => {
-                        Swal.fire({
-                            title: 'Network Error',
-                            text: error.message,
-                            icon: 'error'
-                        });
-                    });
-            },
-            allowOutsideClick: () => !Swal.isLoading()
-        });
-    }
-</script>

@@ -33,7 +33,7 @@ namespace Shift_Tech.Models
             });
             services.AddControllersWithViews();
 
-            // Configure Identity to use your custom User class
+            services.AddScoped<LiqPay>();
             services.AddIdentity<User, IdentityRole<int>>(options =>
             {
                 options.Password.RequiredLength = 8;

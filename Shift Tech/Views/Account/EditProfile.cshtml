@@ -1,51 +1,111 @@
 ﻿@model Shift_Tech.Models.UserProfile
 
 @{
+    Layout = "_AdminLayout";
     ViewData["Title"] = "Edit Profile";
 }
 
-@section styles {
-    
-}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css">
-<style>
-    .profile-container {
-        max-width: 400px;
-        margin: 0 auto;
-        padding: 20px;
-    }
+@section Styles {
+    <style>
+        .profile-container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
 
-    .profile-image {
-        width: 200px;
-        height: 200px;
-        border-radius: 50%;
-        object-fit: cover;
-    }
-
-    .profile-details {
-        margin-top: 20px;
-    }
-
-    .profile-image-upload {
-        position: relative;
-        display: inline-block;
-    }
-
-    .profile-image-button {
-        width: 200px;
-        height: 200px;
-        border-radius: 50%;
-        overflow: hidden;
-        cursor: pointer;
-    }
-
-        .profile-image-button img {
-            width: 100%;
-            height: 100%;
+        .profile-image {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
             object-fit: cover;
         }
 
-</style>
+        .profile-details {
+            margin-top: 20px;
+        }
+
+        .profile-image-upload {
+            position: relative;
+            display: inline-block;
+        }
+
+        .profile-image-button {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+            .profile-image-button img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+    </style>
+}
+@section scripts {
+    <script>
+        $("input.ProfileImageUpload").on("change", (e) => {
+            const fileInput = e.target;
+            const formData = new FormData();
+            formData.append("file", fileInput.files[0]);
+            fetch(`/Account/Uploads/`, {
+                method: "post",
+                body: formData
+            }).then(r => r.json())
+                .then(data => {
+                    console.log(data);
+                    document.getElementById('LogoUrl').src = data.url;
+                });
+        });
+
+        document.getElementById('saveProfileButton').addEventListener('click', function () {
+            const updatedProfile = {
+                Login: document.getElementById('Login').value,
+                Name: document.getElementById('Name').value,
+                Email: document.getElementById('Email').value,
+                PhoneNumber: document.getElementById('PhoneNumber').value,
+                LogoUrl: document.getElementById('LogoUrl').value // Include LogoUrl in the updatedProfile
+            };
+
+            fetch('/Account/EditProfile', {
+                method: 'POST',
+                body: JSON.stringify(updatedProfile),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message === "Success!") {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Profile Updated',
+                            text: 'Your profile has been updated successfully!'
+                        }).then(() => {
+                            window.location.href = '/Account/UserProfile';
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Failed to update profile. Please try again.'
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An error occurred. Please try again.'
+                    });
+                });
+        });
+    </script>
+}
 <div class="container">
     <h2 class="mt-5 mb-4">Edit Profile</h2>
     <form id="editProfileForm">
@@ -80,68 +140,4 @@
         </div>
     </form>
 </div>
-@section scripts {
-   
-}
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-<script>
-    $("input.ProfileImageUpload").on("change", (e) => {
-        const fileInput = e.target;
-        const formData = new FormData();
-        formData.append("file", fileInput.files[0]);
-        fetch(`/Account/Uploads/`, {
-            method: "post",
-            body: formData
-        }).then(r => r.json())
-            .then(data => {
-                console.log(data);
-                document.getElementById('LogoUrl').src = data.url;
-            });
-    });
 
-    document.getElementById('saveProfileButton').addEventListener('click', function () {
-        const updatedProfile = {
-            Login: document.getElementById('Login').value,
-            Name: document.getElementById('Name').value,
-            Email: document.getElementById('Email').value,
-            PhoneNumber: document.getElementById('PhoneNumber').value,
-            LogoUrl: document.getElementById('LogoUrl').value // Include LogoUrl in the updatedProfile
-        };
-
-        fetch('/Account/EditProfile', {
-            method: 'POST',
-            body: JSON.stringify(updatedProfile),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.message === "Success!") {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Profile Updated',
-                        text: 'Your profile has been updated successfully!'
-                    }).then(() => {
-                        window.location.href = '/Account/UserProfile';
-                    });
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Failed to update profile. Please try again.'
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'An error occurred. Please try again.'
-                });
-            });
-    });
-</script>

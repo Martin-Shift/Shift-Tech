@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Shift_Tech.DbModels;
 
@@ -10,9 +11,11 @@ using Shift_Tech.DbModels;
 namespace Shift_Tech.Migrations
 {
     [DbContext(typeof(ShopDbContext))]
-    partial class ShopDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231001163006_Orders")]
+    partial class Orders
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.11");
@@ -162,6 +165,9 @@ namespace Shift_Tech.Migrations
                     b.Property<int?>("CartUserId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("OrderId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("ProductCount")
                         .HasColumnType("INTEGER");
 
@@ -171,6 +177,8 @@ namespace Shift_Tech.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CartUserId");
+
+                    b.HasIndex("OrderId");
 
                     b.HasIndex("ProductId");
 
@@ -232,48 +240,6 @@ namespace Shift_Tech.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("AddressLine1")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("AddressLine2")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("City")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Country")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("Guid")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Phone")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("PostalCode")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int>("UserId")
                         .HasColumnType("INTEGER");
 
@@ -290,9 +256,6 @@ namespace Shift_Tech.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("OrderId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int>("ProductCount")
                         .HasColumnType("INTEGER");
 
@@ -300,8 +263,6 @@ namespace Shift_Tech.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("OrderId");
 
                     b.HasIndex("ProductId");
 
@@ -530,6 +491,10 @@ namespace Shift_Tech.Migrations
                         .WithMany("Products")
                         .HasForeignKey("CartUserId");
 
+                    b.HasOne("Shift_Tech.DbModels.Order", null)
+                        .WithMany("Products")
+                        .HasForeignKey("OrderId");
+
                     b.HasOne("Shift_Tech.DbModels.Product", "Product")
                         .WithMany("Purchases")
                         .HasForeignKey("ProductId")
@@ -576,10 +541,6 @@ namespace Shift_Tech.Migrations
 
             modelBuilder.Entity("Shift_Tech.DbModels.OrderProduct", b =>
                 {
-                    b.HasOne("Shift_Tech.DbModels.Order", null)
-                        .WithMany("Products")
-                        .HasForeignKey("OrderId");
-
                     b.HasOne("Shift_Tech.DbModels.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
