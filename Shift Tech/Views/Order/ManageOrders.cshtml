@@ -84,7 +84,7 @@
                                 <td>@order.CreationDate.ToString("dd.MM.yyyy")</td>
                                 <td>
                                     <div class="d-flex">
-                                        <a href="@Url.Action("ManageOrders", "Order", new { orderId = order.Id })" class="btn btn-outline-primary">Edit</a>
+                                        <a href="@Url.Action("EditOrderDetail", "Order", new { orderId = order.Id })" class="btn btn-outline-primary">Edit</a>
                                         <button onclick="deleteOrder(@order.Id)" class="btn btn-outline-warning">Delete</button>
                                     </div>
                                 </td>

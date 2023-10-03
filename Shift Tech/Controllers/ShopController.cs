@@ -159,6 +159,18 @@ namespace Shift_Tech.Controllers
         }
         //Cart
         [HttpGet]
+        public async Task<IActionResult> GetTopListCategories()
+        {
+            var categories = GetCategories()
+            .OrderByDescending(x => x.Products.Count)
+        .Take(6);
+        var newcategories = _context.Categories.Where(x => categories.Any(c => c.Id == x.Id)).ToList();
+           return Ok(new
+            {
+                Categories = newcategories
+           });
+        }
+        [HttpGet]
         public async Task<IActionResult> GetCartItemCount()
         {
             int itemcount = 0;
@@ -269,7 +281,7 @@ namespace Shift_Tech.Controllers
             .Include(x => x.Reviews)
             .Include(x => x.Purchases)
             .Where(x => x.Price >= filter.MinPrice && x.Price <= filter.MaxPrice)
-            .Where(x => x.Name.ToLower().Contains(filter.Search.ToLower()));         
+            .Where(x => x.Name.ToLower().Contains(filter.Search.ToLower()));
             if (filter.SelectedCategories.Count > 0)
             {
                 products = products.Where(x => filter.SelectedCategories.Any(c => c == x.CategoryId));

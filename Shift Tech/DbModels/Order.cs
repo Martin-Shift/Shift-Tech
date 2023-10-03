@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Shift_Tech.Migrations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Shift_Tech.DbModels
 {
@@ -28,6 +29,10 @@ namespace Shift_Tech.DbModels
         public double TotalPrice()
         {
             return Math.Floor(Products.Sum(x=> x.ProductCount * x.Product.Price) * 100) / 100;
+        }
+        public double TotalPriceWithShipping()
+        {
+            return Math.Floor((TotalPrice() + TotalPrice() / 30) * 100) / 100;
         }
     }
 }

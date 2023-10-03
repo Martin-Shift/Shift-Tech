@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Shift_Tech.DbModels;
 using Shift_Tech.Models;
+using System.Net.Mail;
+using System.Net;
 
 namespace Shift_Tech.Controllers
 {
@@ -68,7 +70,7 @@ namespace Shift_Tech.Controllers
 		public async Task<IActionResult> Payment(int orderId)
 		{
 			var order = _context.Orders.Include(x => x.Products).ThenInclude(x => x.Product).FirstOrDefault(x => x.Id == orderId);
-			var param = _liqPay.PayParams(Convert.ToDecimal(Math.Floor((order.TotalPrice() + order.TotalPrice() / 30) * 100) / 100), "Order products", order.Guid);
+			var param = _liqPay.PayParams(Convert.ToDecimal(order.TotalPriceWithShipping()), "Order products", order.Guid);
 			ViewData["order"] = orderId;
 			ViewData["data"] = _liqPay.GetData(param);
 			ViewData["signature"] = _liqPay.GetSignature(param);
@@ -83,7 +85,53 @@ namespace Shift_Tech.Controllers
 			cart.Products.Clear();
 			order.Products.ToList().ForEach(x => x.Product.InStock -= x.ProductCount);
 			order.Status = Status.Paid;
-			_context.SaveChanges();
+            var message = "Thank you for purchasing in Shift Tech! Your order is being reviewed and will be sent soon";
+            string htmlContent = $@"
+     <!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {{{{
+            text-align: center;
+        }}}}
+        
+        .email-address {{{{
+            color: #777777; 
+            font-size: 18px; 
+        }}}}
+    </style>
+</head>
+<body>
+    <p>{message}</p>
+    <p><span class=""""email-address"""">{order.Email}</span></p>
+    <p>Best regards,</p>
+    <p><em>— Team Shift Tech</em></p>
+</body>
+</html>
+";
+            try
+            {
+                var smtpclient = new SmtpClient("smtp.gmail.com", 587)
+                {
+                    Credentials = new NetworkCredential("mori.steamer@gmail.com", "ldmthoshlrgrqedk"),
+                    EnableSsl = true,
+
+                };
+                var mail = new MailMessage()
+                {
+                    IsBodyHtml = true,
+                    From = new MailAddress("mori.steamer@gmail.com", "Shift Support"),
+                    Subject = "Shift Tech",
+                    Body = htmlContent,
+                };
+                mail.To.Add($"{order.Email}");
+                smtpclient.Send(mail);
+            }
+            catch (Exception)
+            {
+
+            }
+            _context.SaveChanges();
 			return Ok();
 		}
 		[HttpPost]
@@ -94,6 +142,7 @@ namespace Shift_Tech.Controllers
 			_context.SaveChanges();
 			return Ok();
 		}
+
 
 	}
 }

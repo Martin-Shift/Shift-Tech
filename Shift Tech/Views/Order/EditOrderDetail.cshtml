@@ -1,5 +1,137 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@using Shift_Tech.DbModels
+@using System.Globalization
 @{
+    ViewData["Title"] = "Edit Product";
+    Layout = "_AdminLayout";
 }
+
+@model Order;
+
+@section Styles{
+
+}
+@section scripts {
+    <script>
+        function updateOrderStatus() {
+            var orderId = Number("@Model.Id");
+            var status = Number(document.getElementById("Status").value);
+            fetch("/Order/UpdateOrder", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    orderId: orderId,
+                    status: status,
+                })
+            })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = "/Order/ManageOrders";
+                    }
+                })
+                .catch(error => {
+                    Swal.fire({
+                        title: 'Network Error',
+                        text: error.message,
+                        icon: 'error'
+                    });
+                });
+        }
+        function confirmDelete(productId, productName) {
+            Swal.fire({
+                title: 'Delete Product',
+                text: `Are you sure you want to delete the product '${productName}'?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                confirmButtonText: 'Delete',
+                showLoaderOnConfirm: true,
+                preConfirm: () => {
+                    return fetch("/Product/DeleteProduct", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(productId)
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                Swal.fire({
+                                    title: 'Product Deleted!',
+                                    icon: 'success'
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: 'Error Deleting Product',
+                                    text: response.statusText,
+                                    icon: 'error'
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            Swal.fire({
+                                title: 'Network Error',
+                                text: error.message,
+                                icon: 'error'
+                            });
+                        });
+                },
+                allowOutsideClick: () => !Swal.isLoading()
+            });
+        }
+
+    </script>
+}
+@section header {
+
+}
+<h2>Edit Order</h2>
+<div class="card mb-4 product-detail-form">
+    <div class="card-body">
+        <div class="form-group">
+            <label for="ProductName">Guid</label>
+            <input type="text" class="form-control" id="Guid" name="Guid" value="@Model.Guid" readonly />
+        </div>
+        <div class="form-group">
+            <label for="ShortDescription">Customer</label>
+            <input class="form-control" id="Customer" name="FullName" value="@(Model.FirstName + " " + Model.LastName)" readonly>
+        </div>
+        <div class="form-group">
+            <label for="ShortDescription">Customer Email</label>
+            <input class="form-control" id="CustomerEmail" name="Email" value="@(Model.Email)" readonly>
+        </div>
+        <div class="form-group">
+            <label for="ShortDescription">Customer Phone </label>
+            <input class="form-control" id="CustomerPhone" name="Phone" value="@(Model.Phone)" readonly>
+        </div>
+        <div class="form-group">
+            <label for="FullDescription">Country</label>
+            <input class="form-control" id="Country" name="Country" value="@Model.Country" readonly />
+        </div>
+              <div class="form-group">
+            <label for="FullDescription">City</label>
+            <input class="form-control" id="City" name="City" value="@Model.City" readonly />
+        </div>
+        <div class="form-group">
+            <label for="FullDescription">Address</label>
+            <input class="form-control" id="Country" name="Country" value="@Model.AddressLine1" readonly />
+        </div>
+        <div class="form-group">
+            <label for="Price">Price</label>
+            <input type="number" class="form-control" style="width:350px" id="Price" name="Price" value="@Model.TotalPriceWithShipping()" step="0.01" readonly>
+        </div>
+        <div class="form-group">
+            <label for="Category">Status</label>
+            <select class="form-control" id="Status" name="Status">
+                @for (int status = 0; status < 4; status++)
+                {
+                    <option value="@status" @(status == (int)Model.Status ? "selected" : "")>@((Status)status)</option>
+                }
+            </select>
+        </div>
+    </div>
+    <button class="btn btn-primary" onclick="updateOrderStatus()">Save</button>
+</div>
+
+
