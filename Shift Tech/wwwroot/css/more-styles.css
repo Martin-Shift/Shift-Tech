@@ -1,0 +1,39 @@
+﻿.profile-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin-top: 50px;
+}
+
+.profile-image {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 20px;
+}
+
+.profile-details {
+    text-align: center;
+}
+
+    .profile-details h1 {
+        font-size: 24px;
+        color: #333; /* Your desired text color */
+    }
+
+    .profile-details p {
+        font-size: 18px;
+        color: #888; /* A slightly lighter gray color */
+    }
+
+.circle-icon {
+    background: #ffc0c0;
+    height:30px;
+    width:30px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 100px;
+    vertical-align: middle;
+}

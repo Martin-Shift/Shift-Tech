@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using Shift_Tech.ViewModels;
 using Shift_Tech.DbModels;
 using Microsoft.AspNetCore.Identity;
-using Shift_Tech.Models;
 using Microsoft.EntityFrameworkCore;
+using Shift_Tech.Models.Categories;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Shift_Tech.Controllers
 {
+    [Authorize(Roles = "Seller")]
     public class ProductController : Controller
     {
         private readonly ShopDbContext _context;
@@ -27,20 +29,21 @@ namespace Shift_Tech.Controllers
     .Include(x => x.MainImage)
     .Include(x => x.Reviews)
     .Include(x => x.Purchases)
+            .Include(x => x.Creator)
     .ToList();
-        public IActionResult EditProducts()
+        public async Task<IActionResult> EditProducts()
         {
-            var products = GetProducts().ToList();
+            var user = await _userManager.GetUserAsync(User);
+            var products = GetProducts().Where(x => x.Creator == user).ToList();
             var categories = _context.Categories.Include(x => x.Image).Include(x => x.Products).ToList();
             return View(new { Products = products, Categories = categories });
         }
-   public IActionResult EditProductDetail(int productId)
+        public IActionResult EditProductDetail(int productId)
         {
             var product = GetProducts().First(x => x.Id == productId);
 
             return View(new { Product = product, Categories = _context.Categories });
         }
-
         [HttpPost]
         public async Task<IActionResult> AddProduct([FromBody] AddModel model)
         {
@@ -78,12 +81,12 @@ namespace Shift_Tech.Controllers
                 _context.Products.Remove(product);
             }
             _context.SaveChanges();
-            return Ok(new {Message= "Success!" }); 
+            return Ok(new { Message = "Success!" });
         }
         [HttpPost]
-        public IActionResult UpdateProduct([FromBody] Product updatedProduct) 
+        public IActionResult UpdateProduct([FromBody] Product updatedProduct)
         {
-            var product = _context.Products.FirstOrDefault(x=> x.Id ==  updatedProduct.Id);
+            var product = _context.Products.FirstOrDefault(x => x.Id == updatedProduct.Id);
             if (product != null)
             {
                 product.PreviousPrice = updatedProduct.PreviousPrice;
@@ -97,7 +100,7 @@ namespace Shift_Tech.Controllers
             _context.SaveChanges();
             return Ok("Success!"); // Replace with your desired action
         }
-      
+
         public void ClearMainImage(int productId)
         {
             var product = _context.Products.Include(x => x.MainImage).First(x => x.Id == productId);

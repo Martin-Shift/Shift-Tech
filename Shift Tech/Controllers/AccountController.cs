@@ -3,22 +3,24 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Shift_Tech.DbModels;
-using Shift_Tech.Models;
+using Shift_Tech.Models.Account;
 
 namespace Shift_Tech.Controllers
 {
     public class AccountController : Controller
     {
+        private readonly RoleManager<IdentityRole<int>> _roleManager;
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly ShopDbContext _context;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager, ShopDbContext shopDbContext, IWebHostEnvironment webHostEnvironment)
+        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager, ShopDbContext shopDbContext, IWebHostEnvironment webHostEnvironment, RoleManager<IdentityRole<int>> roleManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _context = shopDbContext;
             _webHostEnvironment = webHostEnvironment;
+            _roleManager = roleManager;
         }
 
         [HttpGet]
@@ -112,15 +114,16 @@ namespace Shift_Tech.Controllers
 
                 if (result.Succeeded)
                 {
+                    var user = await _userManager.GetUserAsync(User);
                     var editPageUrl = "/";
-                    _userManager.AddToRoleAsync(await _userManager.GetUserAsync(User), "admin");
+                 
+                 
                     if (!string.IsNullOrEmpty(editPageUrl))
                     {
                         return Ok(new { Message = "Success!", Error = "" });
                     }
                     else
                     {
-                        // If no edit page URL, redirect to a default page (e.g., the homepage)
                         return RedirectToAction("Index", "Home");
                     }
                 }
@@ -146,19 +149,20 @@ namespace Shift_Tech.Controllers
         {
             return View();
         }
-
         [Authorize]
         public async Task<IActionResult> UserProfile()
         {
             var usr = await _userManager.GetUserAsync(User);
-            var user = _context.Users.Include(x => x.Logo).First(x => x.UserName == usr.UserName);
+            var user = _context.Users.Include(x => x.Logo).Include(x=> x.CreatedProducts).First(x => x.UserName == usr.UserName);
             var userProfile = new UserProfile
             {
                 Name = user.VisibleName,
                 Login = user.UserName,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
-                LogoUrl = user.Logo == null ? "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/1200px-No-Image-Placeholder.svg.png " : user.Logo.Url()
+                LogoUrl = user.Logo == null ? "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/1200px-No-Image-Placeholder.svg.png " : user.Logo.Url(),
+                IsAdmin = User.IsInRole("Admin"),
+                IsSeller = User.IsInRole("Seller")
             };
 
             return View(userProfile);

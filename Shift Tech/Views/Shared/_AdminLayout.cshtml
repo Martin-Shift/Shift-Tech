@@ -1,7 +1,7 @@
 ﻿@{
     var isAuthenticated = User.Identity.IsAuthenticated;
-    var isAdmin = User.IsInRole("admin");
-
+    var isAdmin = User.IsInRole("Admin");
+    var isSeller = User.IsInRole("Seller");
 }
 <!DOCTYPE html>
 <html>
@@ -11,7 +11,7 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="Free HTML Templates" name="keywords">
     <meta content="Free HTML Templates" name="description">
-
+    <link href="https://localhost:7166/css/more-styles.css" rel="stylesheet">
     <link href="https://localhost:7166/img/small-logo.png" rel="icon">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -42,26 +42,37 @@
                     <div class="d-inline-flex align-items-center">
                         <div class="btn-group">
                             <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">My Account</button>
-                            <div class="dropdown-menu dropdown-menu-right">
-                                <a class="dropdown-item" href="/Account/UserProfile">View Profile</a>
-                                <a class="dropdown-item" href="/Account/EditProfile">Edit Profile</a>
-                                <button class="dropdown-item" onclick="logout()">Logout</button>
-                                <hr>
-                                <a class="dropdown-item" href="/Category/EditCategories">Edit Categories</a>
-                                <a class="dropdown-item" href="/Product/EditProducts">Edit Products</a>
-                                <a class="dropdown-item" href="/Order/ManageOrders">Manage Orders</a>
-                            </div>
+                            @if (isAuthenticated)
+                            {
+                                <div class="dropdown-menu dropdown-menu-right">
+                                    <a class="dropdown-item" href="/Account/UserProfile">View Profile</a>
+                                    <a class="dropdown-item" href="/Account/EditProfile">Edit Profile</a>
+                                    <button class="dropdown-item" onclick="logout()">Logout</button>
+                                    <hr>
+                                    @if (isSeller)
+                                    {
+                                        <a class="dropdown-item" href="/Category/EditCategories">Edit Categories</a>
+                                        <a class="dropdown-item" href="/Product/EditProducts">Edit Products</a>
+                                    }
+                                    @if (!isSeller)
+                                    {
+                                        <a class="dropdown-item" href="/Contact/Request">Become a Seller</a>
+                                    }
+                                    @if (isAdmin)
+                                    {
+                                        <a class="dropdown-item" href="/Order/ManageOrders">Manage Orders</a>
+                                        <a class="dropdown-item" href="/Request">Manage Requests</a>
+                                    }
+                                    @if (!isAdmin)
+                                    {
+                                        <a class="dropdown-item" href="/Contact/Request">Become an Admin</a>
+                                    }
+
+                                </div>
+                            }
                         </div>
                     </div>
                     <div class="d-inline-flex align-items-center d-block d-lg-none">
-                        <a href="" class="btn px-0 ml-2">
-                            <i class="fas fa-heart text-dark"></i>
-                            <span class="badge text-dark border border-dark rounded-circle" style="padding-bottom: 2px;">0</span>
-                        </a>
-                        <a href="" class="btn px-0 ml-2">
-                            <i class="fas fa-shopping-cart text-dark"></i>
-                            <span class="badge text-dark border border-dark rounded-circle" style="padding-bottom: 2px;">0</span>
-                        </a>
                     </div>
                 </div>
             </div>

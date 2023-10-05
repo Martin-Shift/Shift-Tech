@@ -3,9 +3,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Shift_Tech.DbModels;
-using Shift_Tech.Models;
+using Shift_Tech.Models.Cart;
+using Shift_Tech.Models.Reviews;
+using Shift_Tech.Models.ShopFilter;
 using Shift_Tech.ViewModels;
 using System.ComponentModel;
+using System.Security.Claims;
 
 namespace Shift_Tech.Controllers
 {
@@ -14,13 +17,15 @@ namespace Shift_Tech.Controllers
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly ShopDbContext _context;
+        private readonly RoleManager<IdentityRole<int>> _roleManager;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        public ShopController(UserManager<User> userManager, SignInManager<User> signInManager, ShopDbContext context, IWebHostEnvironment webHostEnvironment)
+        public ShopController(UserManager<User> userManager, SignInManager<User> signInManager, ShopDbContext context, IWebHostEnvironment webHostEnvironment, RoleManager<IdentityRole<int>> roleManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _context = context;
             _webHostEnvironment = webHostEnvironment;
+            _roleManager = roleManager;
         }
         //Getters
         public IQueryable<Product> GetProducts() => _context.Products
@@ -97,13 +102,10 @@ namespace Shift_Tech.Controllers
 
         }
         //Home page
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-
             return View(new { FeaturedCategories = GetTopCategories(), FeaturedProducts = GetTopProducts(), RecentProducts = GetRecentProducts() });
-            // return View();
         }
-        //Product Detail
         [HttpGet]
         public IActionResult ProductDetail(int id)
         {
@@ -247,7 +249,7 @@ namespace Shift_Tech.Controllers
         [HttpGet]
         public async Task<IActionResult> Cart()
         {
-            var user = await _userManager.GetUserAsync(User);
+           var user = await _userManager.GetUserAsync(User);
             var cart = GetCarts().FirstOrDefault(x => x.UserId == user.Id);
             if (cart == null)
             {
@@ -256,6 +258,7 @@ namespace Shift_Tech.Controllers
                     UserId = user.Id,
                 };
             }
+
             return View(cart);
         }
         [HttpGet]

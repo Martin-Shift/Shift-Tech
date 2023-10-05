@@ -5,10 +5,12 @@ using Shift_Tech.DbModels;
 using System.Net.Mail;
 using System.Net;
 using System.Text.Json;
-using Shift_Tech.Models;
+using Shift_Tech.Models.Orders;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Shift_Tech.Controllers
 {
+    [Authorize(Roles ="Admin")]
     public class OrderController : Controller
     {
         private readonly UserManager<User> _userManager;
@@ -86,7 +88,7 @@ namespace Shift_Tech.Controllers
             {
                 var smtpclient = new SmtpClient("smtp.gmail.com", 587)
                 {
-                    Credentials = new NetworkCredential("mori.steamer@gmail.com", "ldmthoshlrgrqedk"),
+                    Credentials = new NetworkCredential("mori.steamer@gmail.com", System.IO.File.ReadAllText("D:\\SecureFiles\\SmtpPassword")),
                     EnableSsl = true,
 
                 };

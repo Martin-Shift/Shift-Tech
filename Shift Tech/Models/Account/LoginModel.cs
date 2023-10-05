@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Xml.Linq;
 
-namespace Shift_Tech.Models
+namespace Shift_Tech.Models.Account
 {
     public class LoginModel
     {

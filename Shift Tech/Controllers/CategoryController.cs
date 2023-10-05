@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +8,7 @@ using Shift_Tech.ViewModels;
 
 namespace Shift_Tech.Controllers
 {
+    [Authorize(Roles ="Seller")]
     public class CategoryController : Controller
     {
         private readonly ShopDbContext _context;
@@ -28,8 +30,9 @@ namespace Shift_Tech.Controllers
         }
         public async Task<IActionResult> EditCategories()
         {
+       
             var user = await GetUser();
-            var categories = _context.Categories.Include(x => x.Image).Include(x => x.Products).Where(x => x.Creator == user).ToList();
+            var categories = _context.Categories.Include(x => x.Image).Include(x => x.Products).Include(x=> x.Creator).Where(x => x.Creator == user).ToList();
             var viewModel = new CategoryViewModel
             {
                 Categories = categories

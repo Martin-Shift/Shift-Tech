@@ -1,4 +1,4 @@
-﻿@model Shift_Tech.Models.UserProfile
+﻿@model Shift_Tech.Models.Account.UserProfile
 
 @{
     ViewData["Title"] = "User Profile";
@@ -7,61 +7,26 @@
 
 @section Styles {
     <style>
-        .profile-container {
-            max-width: 400px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .profile-image {
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        .profile-details {
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        .top-left {
-            position: absolute;
-            top: 110px;
-            left: 90px;
-        }
-
-        .user-data {
-            position: absolute;
-            top: 70px;
-            left: 400px;
-        }
+ 
     </style>
-}
-@section scripts{
-
 }
 
 <div class="container">
-    <div class="top-left">
+    <div class="profile-container">
         <img src="@Model.LogoUrl" class="profile-image" />
-    </div>
-    <div class="profile-container user-data">
         <div class="profile-details">
-            <form>
-                <div class="mb-3">
-                    <label for="Login" class="form-label">Name</label>
-                    <input type="text" id="Name" name="Name" class="form-control" value="@Model.Name" readonly>
-                </div>
-                <div class="mb-3">
-                    <label for="Login" class="form-label">Login</label>
-                    <input type="text" id="Login" name="Login" class="form-control" value="@Model.Login" readonly>
-                </div>
-                <div class="mb-3">
-                    <label for="Email" class="form-label">Email</label>
-                    <input type="email" id="Email" name="Email" class="form-control" value="@Model.Email" readonly>
-                </div>
-            </form>
+            <div style="display:flex; flex-direction:row">
+                <h1>@Model.Name</h1>
+                @if (Model.IsSeller)
+                {
+                    <i title="Seller" class="fas fa-store" style="color:green;margin-left:10px"></i>
+                }
+                @if (Model.IsAdmin)
+                {
+                    <i title="Admin" class="fas fa-user" style="color:blue; margin-left:10px"></i>
+                }
+            </div>
+            <p>@Model.Login</p>
         </div>
     </div>
 </div>

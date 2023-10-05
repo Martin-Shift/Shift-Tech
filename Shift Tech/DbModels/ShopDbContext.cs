@@ -18,5 +18,6 @@ namespace Shift_Tech.DbModels
         public virtual DbSet<Cart> Carts { get; set; }
         public virtual DbSet<Order> Orders { get; set; }
 		public virtual DbSet<OrderProduct> OrderProducts { get; set; }
+        public virtual DbSet<Request> Requests { get; set; }
 	}
 }

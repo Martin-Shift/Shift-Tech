@@ -1,6 +1,7 @@
 ﻿@{
     var isAuthenticated = User.Identity.IsAuthenticated;
-    var isAdmin = User.IsInRole("admin");
+    var isAdmin = User.IsInRole("Admin");
+    var isSeller = User.IsInRole("Seller");
 }
 <!DOCTYPE html>
 <html>
@@ -10,6 +11,7 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="Free HTML Templates" name="keywords">
     <meta content="Free HTML Templates" name="description">
+    <link href="https://localhost:7166/css/more-styles.css" rel="stylesheet">
 
     <link href="https://localhost:7166/img/small-logo.png" rel="icon">
 
@@ -35,7 +37,7 @@ https://cdn.jsdelivr.net/npm/sweetalert2@11.7.31/dist/sweetalert2.min.css
                 <div class="col-lg-6 d-none d-lg-block">
                     <div class="d-inline-flex align-items-center h-100">
                         <a class="text-body mr-3" href="">About</a>
-                        <a class="text-body mr-3" href="">Contact</a>
+                        <a class="text-body mr-3" href="/Contact">Contact</a>
                         <a class="text-body mr-3" href="">Help</a>
                         <a class="text-body mr-3" href="">FAQs</a>
                     </div>
@@ -57,10 +59,24 @@ https://cdn.jsdelivr.net/npm/sweetalert2@11.7.31/dist/sweetalert2.min.css
                                     <a class="dropdown-item" href="/Account/UserProfile">View Profile</a>
                                     <a class="dropdown-item" href="/Account/EditProfile">Edit Profile</a>
                                     <button class="dropdown-item" onclick="logout()">Logout</button>
-                                    <hr>
+                                    <hr>  
+                                    @if (isSeller)
+                                    {
                                         <a class="dropdown-item" href="/Category/EditCategories">Edit Categories</a>
                                         <a class="dropdown-item" href="/Product/EditProducts">Edit Products</a>
-                                    <a class="dropdown-item" href="/Order/ManageOrders">Manage Orders</a>
+                                    }
+                                    @if (!isSeller)
+                                    {
+                                        <a class="dropdown-item" href="/Contact/Request">Become a Seller</a>
+                                    }
+                                    @if(isAdmin){
+                                              <a class="dropdown-item" href="/Order/ManageOrders">Manage Orders</a>
+                                        <a class="dropdown-item" href="/Request">Manage Requests</a>
+                                    }
+                                    @if(!isAdmin){
+                                        <a class="dropdown-item" href="/Contact/Request">Become an Admin</a>
+                                    }
+
                                 </div>
                             }
                         </div>
@@ -68,7 +84,7 @@ https://cdn.jsdelivr.net/npm/sweetalert2@11.7.31/dist/sweetalert2.min.css
                     <div class="d-inline-flex align-items-center d-block d-lg-none">
                         <a href=" @(User.Identity.IsAuthenticated ? "/Shop/Cart" : "Account/Login")" class="btn px-0 ml-2">
                             <i class="fas fa-shopping-cart text-dark"></i>
-                            <span class="badge text-dark border border-dark rounded-circle" style="padding-bottom: 2px;">0</span>
+                            <span id="cartItemCount1" class="badge text-dark border border-dark rounded-circle" style="padding-bottom: 2px;">0</span>
                         </a>
                     </div>
                 </div>
@@ -122,7 +138,7 @@ https://cdn.jsdelivr.net/npm/sweetalert2@11.7.31/dist/sweetalert2.min.css
                             <div class="navbar-nav mr-auto py-0">
                                 <a href="/" class="nav-item nav-link active">Home</a>
                                 <a href="/Shop/ProductList" class="nav-item nav-link">Shop</a>
-                                <a href="contact.html" class="nav-item nav-link">Contact</a>
+                                <a href="/Contact" class="nav-item nav-link">Contact</a>
                             </div>
                             <div class="navbar-nav ml-auto py-0 d-none d-lg-block">
                                 <a href = @(User.Identity.IsAuthenticated ? "/Shop/Cart" : "Account/Login") class="btn px-0 ml-3">
@@ -139,6 +155,7 @@ https://cdn.jsdelivr.net/npm/sweetalert2@11.7.31/dist/sweetalert2.min.css
 
     <div class="container mt-4">
         @RenderBody()
+        <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
     </div>
 
     <footer>
@@ -147,7 +164,6 @@ https://cdn.jsdelivr.net/npm/sweetalert2@11.7.31/dist/sweetalert2.min.css
             <div class="row px-xl-5 pt-5">
                 <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5">
                     <h5 class="text-secondary text-uppercase mb-4">Get In Touch</h5>
-                    <p class="mb-4">No dolore ipsum accusam no lorem. Invidunt sed clita kasd clita et et dolor sed dolor. Rebum tempor no vero est magna amet no</p>
                     <p class="mb-2"><i class="fa fa-map-marker-alt text-primary mr-3"></i>123 Street, New York, USA</p>
                     <p class="mb-2"><i class="fa fa-envelope text-primary mr-3"></i>info@example.com</p>
                     <p class="mb-0"><i class="fa fa-phone-alt text-primary mr-3"></i>+012 345 67890</p>
@@ -157,27 +173,22 @@ https://cdn.jsdelivr.net/npm/sweetalert2@11.7.31/dist/sweetalert2.min.css
                         <div class="col-md-4 mb-5">
                             <h5 class="text-secondary text-uppercase mb-4">Quick Shop</h5>
                             <div class="d-flex flex-column justify-content-start">
-                                <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Home</a>
-                                <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Our Shop</a>
-                                <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Shopping Cart</a>
-                                <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Checkout</a>
+                                <a class="text-secondary mb-2" href="/"><i class="fa fa-angle-right mr-2"></i>Home</a>
+                                <a class="text-secondary mb-2" href="/Shop"><i class="fa fa-angle-right mr-2"></i>Our Shop</a>
+                                <a class="text-secondary mb-2" href="/Shop/Cart"><i class="fa fa-angle-right mr-2"></i>Shopping Cart</a>
                                 <a class="text-secondary" href="#"><i class="fa fa-angle-right mr-2"></i>Contact Us</a>
                             </div>
                         </div>
                         <div class="col-md-4 mb-5">
                             <h5 class="text-secondary text-uppercase mb-4">My Account</h5>
                             <div class="d-flex flex-column justify-content-start">
-                                <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Home</a>
-                                <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Our Shop</a>
-                                <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Shop Detail</a>
-                                <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Shopping Cart</a>
-                                <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Checkout</a>
-                                <a class="text-secondary" href="#"><i class="fa fa-angle-right mr-2"></i>Contact Us</a>
+                                <a class="text-secondary mb-2" href="/"><i class="fa fa-angle-right mr-2"></i>Home</a>
+                                <a class="text-secondary mb-2" href="/Account/UserProfile"><i class="fa fa-angle-right mr-2"></i>View Profile</a> 
                             </div>
                         </div>
                         <div class="col-md-4 mb-5">
                             <h5 class="text-secondary text-uppercase mb-4">Newsletter</h5>
-                            <p>Duo stet tempor ipsum sit amet magna ipsum tempor est</p>
+                            <p>Subscribe for news and offers!</p>
                             <form action="">
                                 <div class="input-group">
                                     <input type="text" class="form-control" placeholder="Your Email Address">
@@ -188,10 +199,10 @@ https://cdn.jsdelivr.net/npm/sweetalert2@11.7.31/dist/sweetalert2.min.css
                             </form>
                             <h6 class="text-secondary text-uppercase mt-4 mb-3">Follow Us</h6>
                             <div class="d-flex">
-                                <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-twitter"></i></a>
-                                <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-facebook-f"></i></a>
-                                <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-linkedin-in"></i></a>
-                                <a class="btn btn-primary btn-square" href="#"><i class="fab fa-instagram"></i></a>
+                                <a class="btn btn-primary btn-square mr-2" href="https://twitter.com/home"><i class="fab fa-twitter"></i></a>
+                                <a class="btn btn-primary btn-square mr-2" href="https://www.facebook.com"><i class="fab fa-facebook-f"></i></a>
+                                <a class="btn btn-primary btn-square mr-2" href="https://www.linkedin.com/feed/"><i class="fab fa-linkedin-in"></i></a>
+                                <a class="btn btn-primary btn-square" href="https://www.instagram.com"><i class="fab fa-instagram"></i></a>
                             </div>
                         </div>
                     </div>
@@ -256,6 +267,7 @@ https://cdn.jsdelivr.net/npm/sweetalert2@11.7.31/dist/sweetalert2.all.min.js
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById("cartItemCount").textContent = data.count;
+                    document.getElementById("cartItemCount1").textContent = data.count;
                 })
                 .catch(error => {
                     // Handle errors if needed

@@ -1,4 +1,4 @@
-﻿namespace Shift_Tech.Models
+﻿namespace Shift_Tech.Models.Reviews
 {
     public class AddReviewModel
     {

@@ -2,20 +2,20 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Shift_Tech.DbModels;
-using Shift_Tech.Models;
 using System.Net.Mail;
 using System.Net;
+using Shift_Tech.Models.Liqpay;
 
 namespace Shift_Tech.Controllers
 {
-	public class CheckoutController : Controller
+    public class CheckoutController : Controller
 	{
 		private readonly UserManager<User> _userManager;
 		private readonly SignInManager<User> _signInManager;
 		private readonly ShopDbContext _context;
 		private readonly IWebHostEnvironment _webHostEnvironment;
-		private readonly Shift_Tech.Models.LiqPay _liqPay;
-		public CheckoutController(UserManager<User> userManager, SignInManager<User> signInManager, ShopDbContext context, IWebHostEnvironment webHostEnvironment, Models.LiqPay liqPay)
+		private readonly Models.Liqpay.LiqPay _liqPay;
+		public CheckoutController(UserManager<User> userManager, SignInManager<User> signInManager, ShopDbContext context, IWebHostEnvironment webHostEnvironment, Models.Liqpay.LiqPay liqPay)
 		{
 			_userManager = userManager;
 			_signInManager = signInManager;
@@ -113,9 +113,8 @@ namespace Shift_Tech.Controllers
             {
                 var smtpclient = new SmtpClient("smtp.gmail.com", 587)
                 {
-                    Credentials = new NetworkCredential("mori.steamer@gmail.com", "ldmthoshlrgrqedk"),
+                    Credentials = new NetworkCredential("mori.steamer@gmail.com", System.IO.File.ReadAllText("D:\\SecureFiles\\SmtpPassword")),
                     EnableSsl = true,
-
                 };
                 var mail = new MailMessage()
                 {
