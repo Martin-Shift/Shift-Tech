@@ -3,6 +3,7 @@
     var isAdmin = User.IsInRole("Admin");
     var isSeller = User.IsInRole("Seller");
 }
+@using Resources;
 <!DOCTYPE html>
 <html>
 <head>
@@ -36,49 +37,57 @@ https://cdn.jsdelivr.net/npm/sweetalert2@11.7.31/dist/sweetalert2.min.css
             <div class="row bg-secondary py-1 px-xl-5">
                 <div class="col-lg-6 d-none d-lg-block">
                     <div class="d-inline-flex align-items-center h-100">
-                        <a class="text-body mr-3" href="">About</a>
-                        <a class="text-body mr-3" href="/Contact">Contact</a>
-                        <a class="text-body mr-3" href="">Help</a>
-                        <a class="text-body mr-3" href="">FAQs</a>
+                        <a class="text-body mr-3" href="">@Resource.About</a>
+                        <a class="text-body mr-3" href="/Contact">@Resource.Contact</a>
+                        <a class="text-body mr-3" href="">@Resource.Help</a>
                     </div>
                 </div>
                 <div class="col-lg-6 text-center text-lg-right">
                     <div class="d-inline-flex align-items-center">
                         <div class="btn-group">
-                            <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">My Account</button>
+                            <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">@Resource.MyAccount</button>
                             @if (!isAuthenticated)
                             {
                                 <div class="dropdown-menu dropdown-menu-right">
-                                    <a class="dropdown-item" href="/Account/Login">Sign in</a>
-                                    <a class="dropdown-item" href="/Account/Register">Sign up</a>
+                                    <a class="dropdown-item" href="/Account/Login">@Resource.SignIn</a>
+                                    <a class="dropdown-item" href="/Account/Register">@Resource.SignUp</a>
                                 </div>
                             }
-                            @if(isAuthenticated)
+                            @if (isAuthenticated)
                             {
                                 <div class="dropdown-menu dropdown-menu-right">
-                                    <a class="dropdown-item" href="/Account/UserProfile">View Profile</a>
-                                    <a class="dropdown-item" href="/Account/EditProfile">Edit Profile</a>
-                                    <button class="dropdown-item" onclick="logout()">Logout</button>
-                                    <hr>  
+                                    <a class="dropdown-item" href="/Account/UserProfile">@Resource.ViewProfile</a>
+                                    <a class="dropdown-item" href="/Account/EditProfile">@Resource.EditProfile</a>
+                                    <button class="dropdown-item" onclick="logout()">@Resource.Logout</button>
+                                    <hr>
                                     @if (isSeller)
                                     {
-                                        <a class="dropdown-item" href="/Category/EditCategories">Edit Categories</a>
-                                        <a class="dropdown-item" href="/Product/EditProducts">Edit Products</a>
+                                        <a class="dropdown-item" href="/Category/EditCategories">@Resource.EditCategories</a>
+                                        <a class="dropdown-item" href="/Product/EditProducts">@Resource.EditProducts</a>
                                     }
                                     @if (!isSeller)
                                     {
-                                        <a class="dropdown-item" href="/Contact/Request">Become a Seller</a>
+                                        <a class="dropdown-item" href="/Contact/Request">@Resource.BecomeASeller</a>
                                     }
-                                    @if(isAdmin){
-                                              <a class="dropdown-item" href="/Order/ManageOrders">Manage Orders</a>
-                                        <a class="dropdown-item" href="/Request">Manage Requests</a>
+                                    @if (isAdmin)
+                                    {
+                                        <a class="dropdown-item" href="/Order/ManageOrders">@Resource.ManageOrders</a>
+                                        <a class="dropdown-item" href="/Request">@Resource.ManageRequests</a>
                                     }
-                                    @if(!isAdmin){
-                                        <a class="dropdown-item" href="/Contact/Request">Become an Admin</a>
+                                    @if (!isAdmin)
+                                    {
+                                        <a class="dropdown-item" href="/Contact/Request">@Resource.BecomeAnAdmin</a>
                                     }
 
                                 </div>
                             }
+                        </div>
+                        <div class="btn-group ml-3">
+                            <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">@Resource.Language</button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <button data-lang="en-US" id="dropdown-lang-item" class="dropdown-lang-item dropdown-item" type="button">En</button>
+                                <button data-lang="uk-UA" id="dropdown-lang-item" class="dropdown-lang-item dropdown-item" type="button">Ua</button>
+                            </div>
                         </div>
                     </div>
                     <div class="d-inline-flex align-items-center d-block d-lg-none">
@@ -96,17 +105,17 @@ https://cdn.jsdelivr.net/npm/sweetalert2@11.7.31/dist/sweetalert2.min.css
                     </div>
                 </div>
                 <div class="col-lg-4 col-6 text-left">
-                        <div class="input-group">
-                            <input id="search-products-text" type="text" class="form-control" placeholder="Search for products">
-                            <div class="input-group-append">
-                                <span class="input-group-text bg-transparent text-primary">
-                                    <button class="btn btn-square" id="search-products"><i class="fa fa-search"></i></button>
-                                </span>
-                            </div>
+                    <div class="input-group">
+                        <input id="search-products-text" type="text" class="form-control" placeholder="@Resource.SearchForProducts">
+                        <div class="input-group-append">
+                            <span class="input-group-text bg-transparent text-primary">
+                                <button class="btn btn-square" id="search-products"><i class="fa fa-search"></i></button>
+                            </span>
                         </div>
+                    </div>
                 </div>
                 <div class="col-lg-4 col-6 text-right">
-                    <p class="m-0">Customer Service</p>
+                    <p class="m-0">@Resource.CustomerService</p>
                     <h5 class="m-0">+012 345 6789</h5>
                 </div>
             </div>
@@ -116,7 +125,7 @@ https://cdn.jsdelivr.net/npm/sweetalert2@11.7.31/dist/sweetalert2.min.css
             <div class="row px-xl-5">
                 <div class="col-lg-3 d-none d-lg-block">
                     <a class="btn d-flex align-items-center justify-content-between bg-primary w-100" data-toggle="collapse" href="#navbar-vertical" style="height: 65px; padding: 0 30px;">
-                        <h6 class="text-dark m-0"><i class="fa fa-bars mr-2"></i>Categories</h6>
+                        <h6 class="text-dark m-0"><i class="fa fa-bars mr-2"></i>@Resources.Resource.Categories</h6>
                         <i class="fa fa-angle-down text-dark"></i>
                     </a>
                     <nav class="collapse position-absolute navbar navbar-vertical navbar-light align-items-start p-0 bg-light" id="navbar-vertical" style="width: calc(100% - 30px); z-index: 999;">
@@ -135,13 +144,13 @@ https://cdn.jsdelivr.net/npm/sweetalert2@11.7.31/dist/sweetalert2.min.css
                             <span class="navbar-toggler-icon"></span>
                         </button>
                         <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
-                            <div class="navbar-nav mr-auto py-0">
-                                <a href="/" class="nav-item nav-link active">Home</a>
-                                <a href="/Shop/ProductList" class="nav-item nav-link">Shop</a>
-                                <a href="/Contact" class="nav-item nav-link">Contact</a>
+                            <div id="home-context-menu" class="navbar-nav mr-auto py-0">
+                                <a href="/" class="nav-item nav-link active">@Resource.Home</a>
+                                <a href="/Shop/ProductList" class="nav-item nav-link">@Resource.Shop</a>
+                                <a href="/Contact" class="nav-item nav-link">@Resource.Contact</a>
                             </div>
                             <div class="navbar-nav ml-auto py-0 d-none d-lg-block">
-                                <a href = @(User.Identity.IsAuthenticated ? "/Shop/Cart" : "Account/Login") class="btn px-0 ml-3">
+                                <a href=@(User.Identity.IsAuthenticated ? "/Shop/Cart" : "Account/Login") class="btn px-0 ml-3">
                                     <i class="fas fa-shopping-cart text-primary"></i>
                                     <span id="cartItemCount" class="badge text-secondary border border-secondary rounded-circle" style="padding-bottom: 2px;">0</span>
                                 </a>
@@ -163,41 +172,49 @@ https://cdn.jsdelivr.net/npm/sweetalert2@11.7.31/dist/sweetalert2.min.css
         <div class="container-fluid bg-dark text-secondary mt-5 pt-5">
             <div class="row px-xl-5 pt-5">
                 <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5">
-                    <h5 class="text-secondary text-uppercase mb-4">Get In Touch</h5>
-                    <p class="mb-2"><i class="fa fa-map-marker-alt text-primary mr-3"></i>123 Street, New York, USA</p>
+                    <h5 class="text-secondary text-uppercase mb-4">@Resource.GetInTouch</h5>
+                    <p class="mb-2"><i class="fa fa-map-marker-alt text-primary mr-3"></i>@Resource.Street123NewYorkUSA</p>
                     <p class="mb-2"><i class="fa fa-envelope text-primary mr-3"></i>info@example.com</p>
                     <p class="mb-0"><i class="fa fa-phone-alt text-primary mr-3"></i>+012 345 67890</p>
                 </div>
                 <div class="col-lg-8 col-md-12">
                     <div class="row">
                         <div class="col-md-4 mb-5">
-                            <h5 class="text-secondary text-uppercase mb-4">Quick Shop</h5>
+                            <h5 class="text-secondary text-uppercase mb-4">@Resource.QuickShop</h5>
                             <div class="d-flex flex-column justify-content-start">
-                                <a class="text-secondary mb-2" href="/"><i class="fa fa-angle-right mr-2"></i>Home</a>
-                                <a class="text-secondary mb-2" href="/Shop"><i class="fa fa-angle-right mr-2"></i>Our Shop</a>
-                                <a class="text-secondary mb-2" href="/Shop/Cart"><i class="fa fa-angle-right mr-2"></i>Shopping Cart</a>
-                                <a class="text-secondary" href="#"><i class="fa fa-angle-right mr-2"></i>Contact Us</a>
+                                <a class="text-secondary mb-2" href="/"><i class="fa fa-angle-right mr-2"></i>@Resource.Home</a>
+                                <a class="text-secondary mb-2" href="/Shop"><i class="fa fa-angle-right mr-2"></i>@Resource.Shop</a>
+                                <a class="text-secondary mb-2" href="/Shop/Cart"><i class="fa fa-angle-right mr-2"></i>@Resource.ShoppingCart</a>
+                                <a class="text-secondary" href="/Contact"><i class="fa fa-angle-right mr-2"></i>@Resource.Contact</a>
                             </div>
                         </div>
                         <div class="col-md-4 mb-5">
-                            <h5 class="text-secondary text-uppercase mb-4">My Account</h5>
+                            <h5 class="text-secondary text-uppercase mb-4">@Resource.MyAccount</h5>
                             <div class="d-flex flex-column justify-content-start">
-                                <a class="text-secondary mb-2" href="/"><i class="fa fa-angle-right mr-2"></i>Home</a>
-                                <a class="text-secondary mb-2" href="/Account/UserProfile"><i class="fa fa-angle-right mr-2"></i>View Profile</a> 
+                                @if (isAuthenticated)
+                                {
+                                    <a class="text-secondary mb-2" href="/Account/UserProfile"><i class="fa fa-angle-right mr-2"></i>@Resource.ViewProfile</a>
+                                    <a class="text-secondary mb-2" href="/Account/EditProfile"><i class="fa fa-angle-right mr-2"></i>@Resource.EditProfile</a>
+                                }
+                                @if (!isAuthenticated)
+                                {
+                                    <a class="text-secondary mb-2" href="/Account/Login"><i class="fa fa-angle-right mr-2"></i>@Resource.SignIn</a>
+                                    <a class="text-secondary mb-2" href="/Account/Register"><i class="fa fa-angle-right mr-2"></i>@Resource.SignUp</a>
+                                }
                             </div>
                         </div>
                         <div class="col-md-4 mb-5">
-                            <h5 class="text-secondary text-uppercase mb-4">Newsletter</h5>
-                            <p>Subscribe for news and offers!</p>
+                            <h5 class="text-secondary text-uppercase mb-4">@Resource.Newsletter</h5>
+                            <p>@Resource.Subscribe</p>
                             <form action="">
                                 <div class="input-group">
-                                    <input type="text" class="form-control" placeholder="Your Email Address">
+                                    <input type="text" class="form-control" placeholder="@Resource.YourEmailAddress">
                                     <div class="input-group-append">
-                                        <button class="btn btn-primary">Sign Up</button>
+                                        <button class="btn btn-primary">@Resource.SignUpEmail</button>
                                     </div>
                                 </div>
                             </form>
-                            <h6 class="text-secondary text-uppercase mt-4 mb-3">Follow Us</h6>
+                            <h6 class="text-secondary text-uppercase mt-4 mb-3">@Resource.FollowUs</h6>
                             <div class="d-flex">
                                 <a class="btn btn-primary btn-square mr-2" href="https://twitter.com/home"><i class="fab fa-twitter"></i></a>
                                 <a class="btn btn-primary btn-square mr-2" href="https://www.facebook.com"><i class="fab fa-facebook-f"></i></a>
@@ -270,13 +287,32 @@ https://cdn.jsdelivr.net/npm/sweetalert2@11.7.31/dist/sweetalert2.all.min.js
                     document.getElementById("cartItemCount1").textContent = data.count;
                 })
                 .catch(error => {
-                    // Handle errors if needed
                     console.error("Fetch error:", error);
                 });
             loadcategories();
+            $('.dropdown-lang-item').click(function () {
+                var selectedLang = $(this).data('lang');
+                console.log(selectedLang);
+                fetch('/Language/ChangeLanguage', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(selectedLang), 
+                })
+                    .then(function (response) {
+                        if (response.ok) {
+                            location.reload(); 
+                        } else {
+                            console.error('Localization update failed:', response.statusText);
+                        }
+                    })
+                    .catch(function (error) {
+                        console.error('Localization update failed:', error);
+                    });
+            });
         });
-        function loadcategories()
-        {
+        function loadcategories() {
             fetch("/Shop/GetTopListCategories", {
                 method: "GET",
                 headers: {
@@ -284,14 +320,13 @@ https://cdn.jsdelivr.net/npm/sweetalert2@11.7.31/dist/sweetalert2.all.min.js
                 }
             })
                 .then(response => {
-                    console.log(response);
                     return response.json();
                 })
-                .then(data => { 
-                 
+                .then(data => {
+
                     var navbarNav = document.getElementById("category-navbar");
-                    navbarNav.innerHTML = ""; 
-                
+                    navbarNav.innerHTML = "";
+
                     data.categories.forEach(function (category) {
                         var link = document.createElement("a");
                         link.href = "#";

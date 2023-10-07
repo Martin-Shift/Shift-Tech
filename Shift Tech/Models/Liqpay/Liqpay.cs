@@ -11,8 +11,8 @@ public class LiqPay
     private Params _param;
     public LiqPay()
     {
-        _publicKey = "sandbox_i11794916005";
-        _privateKey = "sandbox_SRz3HHrXQahe2UQDHNYsrZFzPYiiZfCM6qGrNHaD";
+        _publicKey = File.ReadAllText("D:\\SecureFiles\\publicKey.txt");
+        _privateKey = File.ReadAllText("D:\\SecureFiles\\privateKey.txt");
     }
     private string Sign(string data)
     {

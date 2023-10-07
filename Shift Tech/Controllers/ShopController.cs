@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -8,6 +9,7 @@ using Shift_Tech.Models.Reviews;
 using Shift_Tech.Models.ShopFilter;
 using Shift_Tech.ViewModels;
 using System.ComponentModel;
+using System.Globalization;
 using System.Security.Claims;
 
 namespace Shift_Tech.Controllers
@@ -40,6 +42,7 @@ namespace Shift_Tech.Controllers
         }
         public List<Category> GetTopCategories()
         => GetCategories()
+            .OrderByDescending(x=> x.Products.Count)
                 .Take(4)
                 .ToList();
         public List<Cart> GetCarts()
@@ -312,6 +315,22 @@ namespace Shift_Tech.Controllers
             products = products.Skip((filter.Page - 1) * 9)
             .Take(9);
             return PartialView("_ProductListPartial", await products.ToListAsync());
+        }
+        [HttpPost]
+        public IActionResult SetLanguage([FromBody] string culture)
+        {
+            Response.Cookies.Append(
+                CookieRequestCultureProvider.DefaultCookieName,
+                CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)),
+                new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) }
+            );
+            if (Request.Cookies.TryGetValue("Culture", out string selectedCulture))
+            {
+                CultureInfo cultureInfo = new CultureInfo(selectedCulture);
+                System.Threading.Thread.CurrentThread.CurrentCulture = cultureInfo;
+                System.Threading.Thread.CurrentThread.CurrentUICulture = cultureInfo;
+            }
+            return RedirectToAction("Index");
         }
     }
 }

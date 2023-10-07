@@ -102,12 +102,12 @@
 
 }
 
-
+@using Resources;
 <body>
     <div class="container-fluid">
         <div class="row px-xl-5">
             <div class="col-lg-3 col-md-4">
-                <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Filter by price</span></h5>
+                <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">@Resource.FilterByPrice</span></h5>
                 <div class="range_container">
                     <div class="sliders_control">
                         <input id="fromSlider" type="range" value="@pricerange.StartPrice" min="@pricerange.StartPrice" max="@pricerange.EndPrice" />
@@ -115,19 +115,19 @@
                     </div>
                     <div class="form_control">
                         <div class="form_control_container">
-                            <div class="form_control_container__time">Min</div>
+                            <div class="form_control_container__time">@Resource.Min</div>
                             <input class="form_control_container__time__input" type="number" id="fromInput" value="@pricerange.StartPrice" min="@pricerange.StartPrice" max="@pricerange.EndPrice" />
                         </div>
                         <div class="form_control_container">
-                            <div class="form_control_container__time">Max</div>
+                            <div class="form_control_container__time">@Resource.Max</div>
                             <input class="form_control_container__time__input" type="number" id="toInput" value="@pricerange.EndPrice" min="@pricerange.StartPrice" max="@pricerange.EndPrice" />
                         </div>
                     </div>
                     <button class="btn btn-primary px-3 mt-2" onclick="FilterByPrice()">
-                        <i class="fa mr-1"></i> Apply Changes
+                        <i class="fa mr-1"></i> @Resource.ApplyChanges
                     </button>
                 </div>
-                <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Filter by Categories</span></h5>
+                <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">@Resource.FilterByCategories</span></h5>
                 <div class="bg-light p-4 mb-30">
                     @foreach (Category category in categories)
                     {
@@ -146,13 +146,13 @@
                         <div class="d-flex align-items-center justify-content-between mb-4">
                             <div class="ml-2">
                                 <div class="btn-group">
-                                    <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">Sorting</button>
+                                    <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">@Resource.Sorting</button>
                                     <div class="dropdown-menu dropdown-menu-right">
-                                        <button class="dropdown-item" onclick="sortSelect(0)">Popularity</button>
-                                        <button class="dropdown-item" onclick="sortSelect(1)">Recent</button>
-                                        <button class="dropdown-item" onclick="sortSelect(2)">Cheapest to Expensive</button>
-                                        <button class="dropdown-item" onclick="sortSelect(3)">Expensive to Cheapest</button>
-                                        <button class="dropdown-item" onclick="sortSelect(4)">Best Rating</button>
+                                        <button class="dropdown-item" onclick="sortSelect(0)">@Resource.Popularity</button>
+                                        <button class="dropdown-item" onclick="sortSelect(1)">@Resource.Recent</button>
+                                        <button class="dropdown-item" onclick="sortSelect(2)">@Resource.CheapestToExpensive</button>
+                                        <button class="dropdown-item" onclick="sortSelect(3)">@Resource.ExpensiveToCheapest</button>
+                                        <button class="dropdown-item" onclick="sortSelect(4)">@Resource.BestRating</button>
                                     </div>
                                 </div>
                             </div>
@@ -183,6 +183,12 @@
 
     @section Scripts {
         <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                document.getElementById("home-context-menu").innerHTML =
+                    `  <a href="/" class="nav-item nav-link ">@Resource.Home</a>
+                                                    <a href = "/Shop/ProductList" class="nav-item nav-link active" >@Resource.Shop</a>
+                                            <a href = "/Contact" class="nav-item nav-link" >@Resource.Contact</a>`
+            });
             var filter = {
                 minPrice: 0,
                 maxPrice: 100000,

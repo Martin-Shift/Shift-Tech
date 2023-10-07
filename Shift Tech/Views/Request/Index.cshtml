@@ -16,16 +16,17 @@
 
     </style>
 }
+@using Resources;
 @section scripts{
     <script>
         function declineRequest(requestId) {
             Swal.fire({
-                title: 'Decline Request',
-                text: `Are you sure you want to decline the request '${requestId}'?`,
+                title: '@Resource.DeclineRequest',
+                text: `@Resource.DeclineRequestConfirm'${requestId}'?`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
-                confirmButtonText: 'Decline',
+                confirmButtonText: '@Resource.Decline',
                 showLoaderOnConfirm: true,
                 preConfirm: () => {
                     return fetch("/Request/DeclineRequest", {
@@ -38,7 +39,7 @@
                         .then(response => {
                             if (response.ok) {
                                 Swal.fire({
-                                    title: 'Request Declined!',
+                                    title: '@Resource.Success',
                                     icon: 'success'
                                 });
                                 location.reload();
@@ -63,12 +64,12 @@
         }
         function acceptRequest(requestId) {
             Swal.fire({
-                title: 'Accept Request',
+                title: '@Resource.AcceptRequest',
                 text: `Are you sure you want to accept the request '${requestId}'?`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#7851a9',
-                confirmButtonText: 'Accept',
+                confirmButtonText: '@Resource.Accept',
                 showLoaderOnConfirm: true,
                 preConfirm: () => {
                     return fetch("/Request/AcceptRequest", {
@@ -81,13 +82,13 @@
                         .then(response => {
                             if (response.ok) {
                                 Swal.fire({
-                                    title: 'Request Accepted!',
+                                    title: '@Resource.Accept',
                                     icon: 'success'
                                 });
                                 location.reload();
                             } else {
                                 Swal.fire({
-                                    title: 'Error Accepting Request',
+                                    title: 'Error',
                                     text: response.statusText,
                                     icon: 'error'
                                 });
@@ -115,12 +116,12 @@
                     <thead>
                         <tr>
                             <th>Id</th>
-                            <th>User Image</th>
-                            <th>Sender</th>
-                            <th>Request Type</th>
-                            <th>Email</th>
-                            <th>Phone</th>
-                            <th>Message</th>
+                            <th>@Resource.UserImage</th>
+                            <th>@Resource.Sender</th>
+                            <th>@Resource.RequestType</th>
+                            <th>@Resource.Email</th>
+                            <th>@Resource.PhoneNumber</th>
+                            <th>@Resource.Message</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -139,8 +140,8 @@
                                 <td>@request.Message</td>
                                 <td>
                                     <div class="d-flex">
-                                        <button onclick="acceptRequest(@request.Id)" class="btn btn-outline-info">Accept</button>
-                                        <button onclick="declineRequest(@request.Id)" class="btn btn-outline-warning">Decline</button>
+                                        <button onclick="acceptRequest(@request.Id)" class="btn btn-outline-info">@Resource.Accept</button>
+                                        <button onclick="declineRequest(@request.Id)" class="btn btn-outline-warning">@Resource.Decline</button>
                                     </div>
                                 </td>
                             </tr>

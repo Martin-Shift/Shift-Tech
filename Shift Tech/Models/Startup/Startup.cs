@@ -9,6 +9,8 @@ using Shift_Tech.DbModels;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using System.Numerics;
 using System;
+using Microsoft.AspNetCore.Localization;
+using System.Globalization;
 
 namespace Shift_Tech.Models.Startup
 {
@@ -24,7 +26,6 @@ namespace Shift_Tech.Models.Startup
         public IConfiguration Configuration { get; }
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<PasswordHasherOptions>(opt => opt.IterationCount = 10000);
             services.AddMvc();
             services.AddDbContext<ShopDbContext>((options) =>
             {
@@ -34,7 +35,19 @@ namespace Shift_Tech.Models.Startup
             services.AddControllersWithViews();
 
             services.AddScoped<Shift_Tech.Models.Liqpay.LiqPay>();
-            
+            services.AddLocalization(options => options.ResourcesPath = "Resources");
+
+            services.Configure<RequestLocalizationOptions>(options =>
+            {
+                var supportedCultures = new[]
+                {
+            new CultureInfo("en-US"),
+            new CultureInfo("uk-UA"),
+        };
+                options.DefaultRequestCulture = new RequestCulture("en-US");
+                options.SupportedCultures = supportedCultures;
+                options.SupportedUICultures = supportedCultures;
+            });
             services.AddIdentity<User, IdentityRole<int>>(options =>
             {
                 options.Password.RequiredLength = 8;
@@ -43,6 +56,8 @@ namespace Shift_Tech.Models.Startup
             .AddEntityFrameworkStores<ShopDbContext>()
             .AddDefaultTokenProviders();
 
+            services.AddControllersWithViews()
+                .AddViewLocalization();
             services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromMinutes(120);
@@ -60,14 +75,29 @@ namespace Shift_Tech.Models.Startup
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
-
-
+    app.UseCookiePolicy();
+            app.UseRequestLocalization();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
+        
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseRequestLocalization();
+
+            app.Use(async (context, next) =>
+            {
+                var selectedLanguage = context.Request.Cookies["SelectedLanguage"];
+
+                if (!string.IsNullOrEmpty(selectedLanguage))
+                {
+                    CultureInfo.CurrentCulture = new CultureInfo(selectedLanguage);
+                    CultureInfo.CurrentUICulture = new CultureInfo(selectedLanguage);
+                }
+
+                await next();
+            });
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(

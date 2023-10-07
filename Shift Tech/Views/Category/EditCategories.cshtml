@@ -17,43 +17,10 @@ https://cdn.jsdelivr.net/npm/sweetalert2@11.7.31/dist/sweetalert2.min.css
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <script>
 
-        function editCategory(categoryId, categoryName) {
-            Swal.fire({
-                title: 'Edit Category',
-                input: 'text',
-                inputValue: categoryName,
-                showCancelButton: true,
-                confirmButtonText: 'Save',
-                showLoaderOnConfirm: true,
-                preConfirm: (newName) => {
-                    return fetch(`/Category/EditCategory/${categoryId}?newName=${newName}`)
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error(response.statusText);
-                            }
-                            return response.json();
-                        })
-                        .catch(error => {
-                            Swal.showValidationMessage(`Request failed: ${error}`);
-                        });
-                },
-                allowOutsideClick: () => !Swal.isLoading()
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    Swal.fire({
-                        title: 'Category Updated!',
-                        icon: 'success'
-                    });
-                    // Refresh the page or update the category list
-                    location.reload();
-                }
-            });
-        }
-
         function confirmDelete(categoryId, categoryName) {
             Swal.fire({
-                title: 'Delete Category',
-                text: `Are you sure you want to delete the category '${categoryName}'?`,
+                title: '@Resource.DeleteCategory',
+                text: `@Resource.DeleteCategoryConfirm '${categoryName}'?`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
@@ -83,7 +50,7 @@ https://cdn.jsdelivr.net/npm/sweetalert2@11.7.31/dist/sweetalert2.min.css
             }).then((result) => {
                 if (result.isConfirmed) {
                     Swal.fire({
-                        title: 'Category Deleted!',
+                        title: '@Resource.Success',
                         icon: 'success'
                     });
                     // Refresh the page or update the category list
@@ -109,7 +76,7 @@ https://cdn.jsdelivr.net/npm/sweetalert2@11.7.31/dist/sweetalert2.min.css
                 .then(data => {
                     if (data.message == "Success!") {
                         Swal.fire({
-                            title: 'Category Added!',
+                            title: '@Resource.Success',
                             icon: 'success'
                         });
                     }
@@ -176,7 +143,7 @@ https://cdn.jsdelivr.net/npm/sweetalert2@11.7.31/dist/sweetalert2.min.css
 
 }
 
-
+@using Resources;
 <div class="row">
     @foreach (var category in Model.Categories)
     {
@@ -195,7 +162,7 @@ https://cdn.jsdelivr.net/npm/sweetalert2@11.7.31/dist/sweetalert2.min.css
                     </div>
                     @if (category.Products.Count == 0)
                     {
-                        <a href="#" onclick="confirmDelete(@category.Id, '@category.Name')" class="btn btn-danger">Delete</a>
+                        <a href="#" onclick="confirmDelete(@category.Id, '@category.Name')" class="btn btn-danger">@Resource.Delete</a>
                     }
                 </div>
             </div>
@@ -205,10 +172,10 @@ https://cdn.jsdelivr.net/npm/sweetalert2@11.7.31/dist/sweetalert2.min.css
 
 <div class="mb-4">
     <div class="col-md-3">
-        <h4>Add New Category</h4>
+        <h4>@Resource.AddNewCategory</h4>
         <div class="input-group">
-            <input type="text" class="form-control" id="NewCategoryName" placeholder="Enter New Category Name">
-            <button class="btn btn-success" onclick="addCategory()">Add</button>
+            <input type="text" class="form-control" id="NewCategoryName" placeholder="@Resource.EnterCategoryName">
+            <button class="btn btn-success" onclick="addCategory()">@Resource.Add</button>
         </div>
     </div>
 </div>

@@ -1,8 +1,10 @@
 ﻿@{
+    
     var isAuthenticated = User.Identity.IsAuthenticated;
     var isAdmin = User.IsInRole("Admin");
     var isSeller = User.IsInRole("Seller");
 }
+@using Resources;
 <!DOCTYPE html>
 <html>
 <head>
@@ -32,51 +34,70 @@
             <div class="row bg-secondary py-1 px-xl-5">
                 <div class="col-lg-6 d-none d-lg-block">
                     <div class="d-inline-flex align-items-center h-100">
-                        <a class="text-body mr-3" href="/">Home</a>
-                        <a class="text-body mr-3" href="/Shop/ProductList">Shop</a>
-                        <a class="text-body mr-3" href="">Help</a>
-                        <a class="text-body mr-3" href="">FAQs</a>
+                        <a class="text-body mr-3" href="/">@Resource.Home</a>
+                        <a class="text-body mr-3" href="/Shop/ProductList">@Resource.Shop</a>
+                        <a class="text-body mr-3" href="/Contact">@Resource.Contact</a>
+           
                     </div>
                 </div>
                 <div class="col-lg-6 text-center text-lg-right">
                     <div class="d-inline-flex align-items-center">
                         <div class="btn-group">
-                            <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">My Account</button>
+                            <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">@Resource.MyAccount</button>
+                            @if (!isAuthenticated)
+                            {
+                                <div class="dropdown-menu dropdown-menu-right">
+                                    <a class="dropdown-item" href="/Account/Login">@Resource.SignIn</a>
+                                    <a class="dropdown-item" href="/Account/Register">@Resource.SignUp</a>
+                                </div>
+                            }
                             @if (isAuthenticated)
                             {
                                 <div class="dropdown-menu dropdown-menu-right">
-                                    <a class="dropdown-item" href="/Account/UserProfile">View Profile</a>
-                                    <a class="dropdown-item" href="/Account/EditProfile">Edit Profile</a>
-                                    <button class="dropdown-item" onclick="logout()">Logout</button>
+                                    <a class="dropdown-item" href="/Account/UserProfile">@Resource.ViewProfile</a>
+                                    <a class="dropdown-item" href="/Account/EditProfile">@Resource.EditProfile</a>
+                                    <button class="dropdown-item" onclick="logout()">@Resource.Logout</button>
                                     <hr>
                                     @if (isSeller)
                                     {
-                                        <a class="dropdown-item" href="/Category/EditCategories">Edit Categories</a>
-                                        <a class="dropdown-item" href="/Product/EditProducts">Edit Products</a>
+                                        <a class="dropdown-item" href="/Category/EditCategories">@Resource.EditCategories</a>
+                                        <a class="dropdown-item" href="/Product/EditProducts">@Resource.EditProducts</a>
                                     }
                                     @if (!isSeller)
                                     {
-                                        <a class="dropdown-item" href="/Contact/Request">Become a Seller</a>
+                                        <a class="dropdown-item" href="/Contact/Request">@Resource.BecomeASeller</a>
                                     }
                                     @if (isAdmin)
                                     {
-                                        <a class="dropdown-item" href="/Order/ManageOrders">Manage Orders</a>
-                                        <a class="dropdown-item" href="/Request">Manage Requests</a>
+                                        <a class="dropdown-item" href="/Order/ManageOrders">@Resource.ManageOrders</a>
+                                        <a class="dropdown-item" href="/Request">@Resource.ManageRequests</a>
                                     }
                                     @if (!isAdmin)
                                     {
-                                        <a class="dropdown-item" href="/Contact/Request">Become an Admin</a>
+                                        <a class="dropdown-item" href="/Contact/Request">@Resource.BecomeAnAdmin</a>
                                     }
 
                                 </div>
                             }
                         </div>
+                        <div class="btn-group ml-3">
+                            <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">@Resource.Language</button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <button data-lang="en-US" id="dropdown-lang-item" class="dropdown-lang-item dropdown-item" type="button">En</button>
+                                <button data-lang="uk-UA" id="dropdown-lang-item" class="dropdown-lang-item dropdown-item" type="button">Ua</button>
+                            </div>
+                        </div>
                     </div>
                     <div class="d-inline-flex align-items-center d-block d-lg-none">
+                        <a href=" @(User.Identity.IsAuthenticated ? "/Shop/Cart" : "Account/Login")" class="btn px-0 ml-2">
+                            <i class="fas fa-shopping-cart text-dark"></i>
+                            <span id="cartItemCount1" class="badge text-dark border border-dark rounded-circle" style="padding-bottom: 2px;">0</span>
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
+
         @RenderSection("header",required:false)
     </header>
 

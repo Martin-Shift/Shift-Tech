@@ -5,20 +5,20 @@
     Layout = "_AdminLayout";
 }
 @model List<Order>
+@using Resources;
 @section Styles{
 
 }
 @section scripts{
     <script>
-        function deleteOrder(orderId)
-        {
+        function deleteOrder(orderId) {
             Swal.fire({
-                title: 'Delete Order',
-                text: `Are you sure you want to delete the order '${orderId}'?`,
+                title: '@Resource.DeleteOrder',
+                text: `@Resource.DeleteOrderConfirm '${orderId}'?`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
-                confirmButtonText: 'Delete',
+                confirmButtonText: '@Resource.Delete',
                 showLoaderOnConfirm: true,
                 preConfirm: () => {
                     return fetch("/Order/DeleteOrder", {
@@ -31,12 +31,12 @@
                         .then(response => {
                             if (response.ok) {
                                 Swal.fire({
-                                    title: 'Order Deleted!',
+                                    title: '@Resource.Success',
                                     icon: 'success'
                                 });
                             } else {
                                 Swal.fire({
-                                    title: 'Error Deleting Product',
+                                    title: 'Error',
                                     text: response.statusText,
                                     icon: 'error'
                                 });
@@ -64,10 +64,10 @@
                     <thead>
                         <tr>
                             <th>Id</th>
-                            <th>Receiver</th>
-                            <th>Country</th>
-                            <th>Email</th>
-                            <th>Creation Date</th>
+                            <th>@Resource.Receiver</th>
+                            <th>@Resource.Country</th>
+                            <th>@Resource.Email</th>
+                            <th>@Resource.CreationDate</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -82,8 +82,8 @@
                                 <td>@order.CreationDate.ToString("dd.MM.yyyy")</td>
                                 <td>
                                     <div class="d-flex">
-                                        <a href="@Url.Action("EditOrderDetail", "Order", new { orderId = order.Id })" class="btn btn-outline-primary">Edit</a>
-                                        <button onclick="deleteOrder(@order.Id)" class="btn btn-outline-warning">Delete</button>
+                                        <a href="@Url.Action("EditOrderDetail", "Order", new { orderId = order.Id })" class="btn btn-outline-primary">@Resource.Edit</a>
+                                        <button onclick="deleteOrder(@order.Id)" class="btn btn-outline-warning">@Resource.Delete</button>
                                     </div>
                                 </td>
                             </tr>

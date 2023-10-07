@@ -2,6 +2,7 @@
 @{
     var avg = Model.Reviews.Count == 0 ? 0 : Model.Reviews.Average(x => x.Rating);
 }
+@using Resources;
 <div class="col-lg-4 col-md-6 col-sm-6 pb-1"> 
     <div class="justify-content-center product-item bg-light mb-4">
         <div class="card-image-container justify-content-center product-img position-relative overflow-hidden d-flex align-items-center">

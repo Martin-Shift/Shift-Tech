@@ -34,6 +34,10 @@ namespace Shift_Tech.DbModels
         {
             return Math.Floor((TotalPrice() + TotalPrice() / 30) * 100) / 100;
         }
+        public double ShippingPrice()
+        {
+           return Math.Floor(TotalPrice() / 30 *100) / 100;
+        }
     }
 }
  

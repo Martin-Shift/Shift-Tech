@@ -8,7 +8,7 @@
 @section Styles {
 
 }
-
+@using Resources;
 @section scripts {
     <script>
         function addProduct() {
@@ -37,12 +37,12 @@
         }
         function confirmDelete(productId, productName) {
             Swal.fire({
-                title: 'Delete Product',
-                text: `Are you sure you want to delete the product '${productName}'?`,
+                title: '@Resource.DeleteProduct',
+                text: `@Resource.DeleteProductConfirm'${productName}'?`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
-                confirmButtonText: 'Delete',
+                confirmButtonText: '@Resource.Delete',
                 showLoaderOnConfirm: true,
                 preConfirm: () => {
                     return fetch("/Product/DeleteProduct", {
@@ -53,15 +53,14 @@
                         body: JSON.stringify(productId)
                     })
                         .then(response => {
-                            if (response.message = "Success!") {
+                            if (response.ok) {
                                 Swal.fire({
-                                    title: 'Product Deleted!',
+                                    title: '@Resource.Success',
                                     icon: 'success'
                                 });
-                                location.reload();
                             } else {
                                 Swal.fire({
-                                    title: 'Error Deleting Product',
+                                    title: 'Error',
                                     text: response.statusText,
                                     icon: 'error'
                                 });
@@ -86,7 +85,7 @@
 }
 
 <div class="container">
-    <h1>Manage Products</h1>
+    <h1>@Resource.ManageProducts</h1>
 
     <div class="row pb-3">
     @foreach (Product product in Model.Products)
@@ -101,8 +100,8 @@
                     <div class="card-body">
                         <h5 class="card-title">@product.Name</h5>
                         <p class="card-text">Price: $@product.Price</p>
-                        <a href="@Url.Action("EditProductDetail", "Product", new { productId = product.Id })" class="btn btn-primary">Edit</a>
-                        <button class="btn btn-danger" onclick="confirmDelete(@product.Id, '@product.Name')">Delete</button>
+                        <a href="@Url.Action("EditProductDetail", "Product", new { productId = product.Id })" class="btn btn-primary">@Resource.Edit</a>
+                        <button class="btn btn-danger" onclick="confirmDelete(@product.Id, '@product.Name')">@Resource.Delete</button>
                     </div>
                 </div>
             </div>
@@ -110,19 +109,19 @@
     </div>
     <div class="card mb-4">
         <div class="card-body">
-            <h5 class="card-title">Add New Product</h5>
+            <h5 class="card-title">@Resource.AddNewProduct</h5>
             <form method="post" enctype="multipart/form-data">
                 <div class="form-group">
-                    <label for="NewProductName">Name</label>
-                    <input type="text" class="form-control" id="NewProductName" name="NewProductName" placeholder="Enter Product Name" required>
+                    <label for="NewProductName">@Resource.Name</label>
+                    <input type="text" class="form-control" id="NewProductName" name="NewProductName" placeholder="@Resource.EnterProductName" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="NewProductPrice">Price</label>
-                    <input type="number" class="form-control" style="width:350px" id="NewProductPrice" name="NewProductPrice" placeholder="Enter Product Price" step="0.01" required>
+                    <label for="NewProductPrice">@Resource.Price</label>
+                    <input type="number" class="form-control" style="width:350px" id="NewProductPrice" name="NewProductPrice" placeholder="@Resource.EnterProductPrice" step="0.01" required>
                 </div>
                 <div class="form-group">
-                    <label for="Category">Category</label>
+                    <label for="Category">@Resource.Category</label>
                     <select class="form-control" id="NewProductCategory" name="Category">
                         @foreach (var category in Model.Categories)
                         {
@@ -130,7 +129,7 @@
                         }
                     </select>
                 </div>
-                <button type="submit" onclick="addProduct()">Add Product</button>
+                <button type="submit" onclick="addProduct()">@Resource.Add</button>
             </form>
         </div>
     </div>

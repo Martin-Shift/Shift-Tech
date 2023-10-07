@@ -5,7 +5,7 @@
     Layout = "_AdminLayout";
 }
 
-
+@using Resources;
 @section Styles{
 
 }
@@ -59,12 +59,12 @@
         }
         function confirmDelete(productId, productName) {
             Swal.fire({
-                title: 'Delete Product',
-                text: `Are you sure you want to delete the product '${productName}'?`,
+                title: '@Resource.DeleteProduct',
+                text: `@Resource.DeleteProductConfirm'${productName}'?`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
-                confirmButtonText: 'Delete',
+                confirmButtonText: '@Resource.Delete',
                 showLoaderOnConfirm: true,
                 preConfirm: () => {
                     return fetch("/Product/DeleteProduct", {
@@ -77,12 +77,12 @@
                         .then(response => {
                             if (response.ok) {
                                 Swal.fire({
-                                    title: 'Product Deleted!',
+                                    title: '@Resource.Success',
                                     icon: 'success'
                                 });
                             } else {
                                 Swal.fire({
-                                    title: 'Error Deleting Product',
+                                    title: 'Error',
                                     text: response.statusText,
                                     icon: 'error'
                                 });
@@ -111,7 +111,7 @@
             }).then(r => r.json())
                 .then(data => {
                     Swal.fire({
-                        title: 'Image Added!',
+                        title: '@Resource.ImageAdded',
                         icon: 'success'
                     });
                 });
@@ -128,7 +128,7 @@
             }).then(r => r.json())
                 .then(data => {
                     Swal.fire({
-                        title: 'Images Added!',
+                        title: '@Resource.ImagesAdded',
                         icon: 'success'
                     });
                 });
@@ -144,23 +144,23 @@
     <div class="card-body">
         <h5 class="card-title">@Model.Product.Name</h5>
         <div class="form-group">
-            <label for="ProductName">Name</label>
+            <label for="ProductName">@Resource.Name</label>
             <input type="text" class="form-control" id="ProductName" name="ProductName" value="@Model.Product.Name" required>
         </div>
         <div class="form-group">
-            <label for="ShortDescription">Short Description</label>
+            <label for="ShortDescription">@Resource.ShortDescription</label>
             <textarea class="form-control" id="ShortDescription" name="ShortDescription" rows="2">@Model.Product.ShortDescription</textarea>
         </div>
         <div class="form-group">
-            <label for="FullDescription">Full Description</label>
+            <label for="FullDescription">@Resource.FullDescription</label>
             <textarea class="form-control" id="FullDescription" name="FullDescription" rows="4">@Model.Product.Description</textarea>
         </div>
         <div class="form-group">
-            <label for="InStock">In Stock</label>
+            <label for="InStock">@Resource.InStock</label>
             <input type="number" class="form-control" style="width:250px" id="InStock" name="InStock" value="@Model.Product.InStock" required>
         </div>
         <div class="form-group">
-            <label for="Category">Category</label>
+            <label for="Category">@Resource.Category</label>
             <select class="form-control" id="Category" name="Category">
                 @foreach (Category category in Model.Categories)
                 {
@@ -169,31 +169,31 @@
             </select>
         </div>
         <div class="form-group">
-            <label for="Price">Price</label>
+            <label for="Price">@Resource.Price</label>
             <input id="CurrentPrice" type="number" class="form-control" style="width:350px" name="Price" value="@Model.Product.Price.ToString("0.00", CultureInfo.InvariantCulture)" step="0.01" required>
         </div>
         <div class="form-group">
-            <label for="PreviousPrice">Previous Price</label>
+            <label for="PreviousPrice">@Resource.PreviousPrice</label>
             <input type="number" class="form-control" id="PreviousPrice" style="width:350px" name="PreviousPrice" value="@Model.Product.PreviousPrice.ToString("0.00", CultureInfo.InvariantCulture)" step="0.01" @(Model.Product.Price != Model.Product.PreviousPrice ? "" : "readonly")>
         </div>
         <div class="form-check">
             <input type="checkbox" class="form-check-input" id="SaleToggle" name="SaleToggle" @(Model.Product.Price != Model.Product.PreviousPrice ? "checked" : "")>
-            <label class="form-check-label" for="SaleToggle">Enable Sale</label>
+            <label class="form-check-label" for="SaleToggle">@Resource.EnableSale</label>
         </div>
         <div class="form-group">
-            <label for="ProductImage">Main Product Image</label>
+            <label for="ProductImage">@Resource.MainProductImage</label>
             <input type="file" class="mb-2 form-control image-upload" id="ProductImage" name="ProductImage" accept="image/*">
             <div style="max-width:700px; max-height:400px" class="justify-content-center product-img position-relative overflow-hidden d-flex align-items-center">
                 <img class="card-img-top" src="@Model.Product.MainImage?.Url()" />
             </div>
             <div class="form-group">
-                <label for="ProductImage">Product Images</label>
+                <label for="ProductImage">@Resource.ProductImages</label>
                 <input type="file" class="form-control multiple-upload" id="ProductImages" name="ProductImages" accept="image/*" multiple>
             </div>
             <input type="hidden" name="ProductId" value="@Model.Product.Id">
         </div>
     </div>
-    <button class="btn btn-primary" onclick="saveProduct()">Save</button>
+    <button class="btn btn-primary" onclick="saveProduct()">@Resource.Save</button>
 </div>
 
 

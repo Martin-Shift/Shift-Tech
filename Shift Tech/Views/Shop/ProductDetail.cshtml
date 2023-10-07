@@ -14,7 +14,7 @@
 
 }
 
-
+@using Resources;
 <!DOCTYPE html>
 <html lang="en">
 <body>
@@ -22,8 +22,6 @@
     @section header {
 
     }
-
-    <!-- Shop Detail Start -->
     <div class="container-fluid pb-5">
         <div class="row px-xl-5">
             <div class="col-lg-5 mb-30">
@@ -91,12 +89,11 @@
                             </div>
                         </div>
                         <button class="btn btn-primary px-3" onclick="addToCart(@product.Id)">
-                            <i class="fa fa-shopping-cart mr-1"></i> Add To
-                            Cart
+                            <i class="fa fa-shopping-cart mr-1"></i> @Resource.AddToCart
                         </button> <span class="ml-1">(@product.InStock in stock)</span>
                     </div>
                     <div class="d-flex pt-2">
-                        <strong class="text-dark mr-2">Share on:</strong>
+                        <strong class="text-dark mr-2">@Resource.ShareOn:</strong>
                         <div class="d-inline-flex">
                             <a class="text-dark px-2" href="">
                                 <i class="fab fa-facebook-f"></i>
@@ -119,18 +116,18 @@
             <div class="col">
                 <div class="bg-light p-30">
                     <div class="nav nav-tabs mb-4">
-                        <a class="nav-item nav-link text-dark active" data-toggle="tab" href="#tab-pane-1">Description</a>
-                        <a class="nav-item nav-link text-dark" data-toggle="tab" href="#tab-pane-3">Reviews (@product.Reviews.Count)</a>
+                        <a class="nav-item nav-link text-dark active" data-toggle="tab" href="#tab-pane-1">@Resource.Description</a>
+                        <a class="nav-item nav-link text-dark" data-toggle="tab" href="#tab-pane-3">@Resource.Reviews (@product.Reviews.Count)</a>
                     </div>
                     <div class="tab-content">
                         <div class="tab-pane fade show active" id="tab-pane-1">
-                            <h4 class="mb-3">Product Description</h4>
+                            <h4 class="mb-3">@Resource.ProductDescription</h4>
                             <p>@product.Description</p>
                         </div>
                         <div class="tab-pane fade" id="tab-pane-3">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <h4 class="mb-4">@product.Reviews.Count reviews for "@product.Name"</h4>
+                                    <h4 class="mb-4">@product.Reviews.Count @Resource.ReviewsFor "@product.Name"</h4>
                                     @foreach(Review review in reviews)
                                     {
 
@@ -160,9 +157,9 @@
                                 @if (isReviewed.Equals(false))
                                 {
                                     <div class="col-md-6">
-                                        <h4 class="mb-4">Leave a review</h4>
+                                        <h4 class="mb-4">@Resource.LeaveAReview</h4>
                                         <div class="d-flex my-3">
-                                            <p class="mb-0 mr-2">Your Rating * :</p>
+                                            <p class="mb-0 mr-2">@Resource.YourRating * :</p>
                                             <div class="text-primary rating">
                                                     <input type="radio" name="rating" id="rating-5">
                                                     <label for="rating-5"></label>
@@ -177,13 +174,13 @@
                                             </div>
                                         </div>
                                             <div class="form-group">
-                                                <label for="message">Your Review *</label>
+                                                <label for="message">@Resource.YourReview *</label>
                                                 <textarea id="message" cols="30" rows="5" class="form-control"></textarea>
                                             </div>
 
                                             <div class="form-group mb-0">
                                                 <button onclick="addReview(@product.Id)" class="btn btn-primary px-3">
-                                                    <i class="fa mr-1"></i>Leave Review
+                                                    <i class="fa mr-1"></i>@Resource.LeaveAReview
                                                 </button>
                                             </div>
                                     
@@ -197,7 +194,7 @@
         </div>
     </div>
     <div class="container-fluid py-5">
-        <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4"><span class="bg-secondary pr-3">You May Also Like</span></h2>
+        <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4"><span class="bg-secondary pr-3">@Resource.YouMayAlsoLike</span></h2>
         <div class="row px-xl-5">
             <div class="col">
                 <div class="owl-carousel related-carousel">
