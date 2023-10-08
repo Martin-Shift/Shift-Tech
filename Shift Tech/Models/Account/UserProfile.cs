@@ -1,4 +1,6 @@
-﻿namespace Shift_Tech.Models.Account
+﻿using Shift_Tech.DbModels;
+
+namespace Shift_Tech.Models.Account
 {
     public class UserProfile
     {
@@ -9,5 +11,7 @@
         public string? LogoUrl { get; set; }
         public bool IsSeller { get; set; }
         public bool IsAdmin { get; set; }
+        public double AverageRating { get;set; }
+        public List<Product> Products { get; set; }
     }
 }

@@ -160,6 +160,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Average Product Rating.
+        /// </summary>
+        public static string AverageProductRating {
+            get {
+                return ResourceManager.GetString("AverageProductRating", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Become an Admin.
         /// </summary>
         public static string BecomeAnAdmin {
@@ -948,6 +957,15 @@ namespace Resources {
         public static string MobileNo {
             get {
                 return ResourceManager.GetString("MobileNo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Popular products by this Seller.
+        /// </summary>
+        public static string MostPopularUserProducts {
+            get {
+                return ResourceManager.GetString("MostPopularUserProducts", resourceCulture);
             }
         }
         

@@ -53,7 +53,7 @@ namespace Shift_Tech.Controllers
             {
                 var smtpclient = new SmtpClient("smtp.gmail.com", 587)
                 {
-                    Credentials = new NetworkCredential("mori.steamer@gmail.com", System.IO.File.ReadAllText("D:\\SecureFiles\\SmtpPassword")),
+                    Credentials = new NetworkCredential("mori.steamer@gmail.com", System.IO.File.ReadAllText("D:\\SecureFiles\\SmtpPassword.txt")),
                     EnableSsl = true,
                 };
                 var mail = new MailMessage()

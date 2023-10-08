@@ -150,6 +150,9 @@
   <data name="Austria" xml:space="preserve">
     <value>Austria</value>
   </data>
+  <data name="AverageProductRating" xml:space="preserve">
+    <value>Average Product Rating</value>
+  </data>
   <data name="BecomeAnAdmin" xml:space="preserve">
     <value>Become an Admin</value>
   </data>
@@ -413,6 +416,9 @@
   </data>
   <data name="MobileNo" xml:space="preserve">
     <value>Mobile No</value>
+  </data>
+  <data name="MostPopularUserProducts" xml:space="preserve">
+    <value>Popular products by this Seller</value>
   </data>
   <data name="MyAccount" xml:space="preserve">
     <value>My Account</value>

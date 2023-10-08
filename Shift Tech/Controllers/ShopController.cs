@@ -199,6 +199,7 @@ namespace Shift_Tech.Controllers
                 {
                     UserId = user.Id,
                 };
+                _context.Carts.Add(cart);
             }
             var product = await _context.Products.FindAsync(model.ProductId);
             var cartproduct = new CartProduct()
@@ -227,7 +228,12 @@ namespace Shift_Tech.Controllers
                 }
             }
             _context.SaveChanges();
-            return Ok("Success!");
+            int itemcount = 0;
+            if (User.Identity.IsAuthenticated)
+            {
+                itemcount = cart == null ? 0 : cart.Products.Count;
+            }
+            return Ok(new { CartItemCount = itemcount });
         }
         [HttpPost]
         public async Task<IActionResult> RemoveFromCart([FromBody] int productId)

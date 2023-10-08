@@ -132,9 +132,13 @@
                                     {
 
                                     <div class="media mb-4">
-                                            <img src="@review.Publisher.Logo?.Url()" alt="Image" class="img-fluid mr-3 mt-1" style="width: 45px;      border-radius: 50%;">
+                                            <a href="@Url.Action("ViewProfile", "Account",new{userId = review.Publisher.Id})">
+                                                <img src="@review.Publisher.Logo?.Url()" alt="Image" class="img-fluid mr-3 mt-1" style="width: 45px;      border-radius: 50%;">
+                                            </a>
                                         <div class="media-body">
-                                            <h6>@review.Publisher.VisibleName<small> - <i>@review.Date.ToString("dd/MM/yyyy")</i></small></h6>
+                                                <a href="@Url.Action("ViewProfile", "Account",new{userId =review.Publisher.Id})">
+                                                    <h6>@review.Publisher.VisibleName<small> - <i>@review.Date.ToString("dd/MM/yyyy")</i></small></h6>
+                                                </a>
                                             <div class="text-primary mb-2">
                                                     @for (int i = 0; i < Convert.ToInt32(review.Rating); i++)
                                                     {
@@ -203,7 +207,7 @@
                     <div class="product-item bg-light">
                             <div class="card-image-container justify-content-center product-img position-relative overflow-hidden d-flex align-items-center">
                             0.
-                            <img class="img-fluid w-100" src="@item.MainImage?.Url()" alt="">
+                            <img class="img-fluid w-100" src="@item.MainImage?.Url()" alt="" >
                             <div class="product-action">
                                     <a class="btn btn-outline-dark btn-square add-to-cart-button" onclick="addToCart(@item.Id)"><i class="fa fa-shopping-cart"></i></a>
                                     <a class="btn btn-outline-dark btn-square" href="@Url.Action("ProductDetail", "Shop", new { id = item.Id })"><i class="fa fa-search"></i></a>

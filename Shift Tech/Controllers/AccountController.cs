@@ -22,7 +22,12 @@ namespace Shift_Tech.Controllers
             _webHostEnvironment = webHostEnvironment;
             _roleManager = roleManager;
         }
-
+        public IQueryable<Product> GetProducts() => _context.Products
+        .Include(x => x.Category)
+        .Include(x => x.Images)
+    .Include(x => x.MainImage)
+    .Include(x => x.Reviews)
+    .Include(x => x.Purchases);
         [HttpGet]
         public IActionResult Register()
         {
@@ -95,6 +100,7 @@ namespace Shift_Tech.Controllers
         public IActionResult Login()
         {
             return View();
+
         }
         [HttpPost]
         [AllowAnonymous]
@@ -149,11 +155,17 @@ namespace Shift_Tech.Controllers
         {
             return View();
         }
-        [Authorize]
-        public async Task<IActionResult> UserProfile()
+    
+        public async Task<IActionResult> UserProfile(int id)
         {
-            var usr = await _userManager.GetUserAsync(User);
-            var user = _context.Users.Include(x => x.Logo).Include(x=> x.CreatedProducts).First(x => x.UserName == usr.UserName);
+            var user = _context.Users.Include(x => x.Logo).Include(x=> x.CreatedProducts).First(x => x.Id == id);
+            var products = GetProducts().Where(x=> x.Creator.Id == id).ToList();
+            double averageRating = 0;
+            if (products.Any(x => x.Reviews.Count > 0))
+            {
+                var averageproducts = products.Where(x => x.Reviews.Count > 0).Select(x => x.Reviews.Average(r => r.Rating));
+                    averageRating = Math.Floor(averageproducts.Average()*10) / 10;
+            }       
             var userProfile = new UserProfile
             {
                 Name = user.VisibleName,
@@ -162,10 +174,22 @@ namespace Shift_Tech.Controllers
                 PhoneNumber = user.PhoneNumber,
                 LogoUrl = user.Logo == null ? "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/1200px-No-Image-Placeholder.svg.png " : user.Logo.Url(),
                 IsAdmin = User.IsInRole("Admin"),
-                IsSeller = User.IsInRole("Seller")
+                IsSeller = User.IsInRole("Seller"),
+                AverageRating = averageRating,
+                Products = products.OrderByDescending(x=> x.Purchases.Count).Take(8).ToList()
             };
 
             return View(userProfile);
+        }
+        public async Task<IActionResult> ViewProfile(int userId)
+        {
+            return RedirectToAction("UserProfile", new { id = userId });
+        } 
+        [Authorize]
+        public async Task<IActionResult> MyProfile()
+        {
+            var usr = await _userManager.GetUserAsync(User);
+            return RedirectToAction("UserProfile",new { id = usr.Id });
         }
 
         [Authorize]

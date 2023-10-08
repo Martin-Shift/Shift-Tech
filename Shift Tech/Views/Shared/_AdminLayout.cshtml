@@ -140,7 +140,29 @@
                     console.error('Error:', error);
                 });
         }
-
+        document.addEventListener("DOMContentLoaded",function(){
+            $('.dropdown-lang-item').click(function () {
+                var selectedLang = $(this).data('lang');
+                console.log(selectedLang);
+                fetch('/Language/ChangeLanguage', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(selectedLang),
+                })
+                    .then(function (response) {
+                        if (response.ok) {
+                            location.reload();
+                        } else {
+                            console.error('Localization update failed:', response.statusText);
+                        }
+                    })
+                    .catch(function (error) {
+                        console.error('Localization update failed:', error);
+                    });
+            });
+        });
     </script>
     @RenderSection("Scripts",required:false);
 </body>

@@ -9,7 +9,32 @@
 }
 
 @section Scripts {
-    
+    <script>
+        function addToCart(productId) {
+            const productCount = 1;
+
+            fetch("/Shop/AddToCart", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(
+                    {
+                        productId: productId,
+                        productAmount: productCount
+                    })
+            })
+                .then(response => {
+                    return response.json();
+                })
+                .then(data => {
+                    document.getElementById("cartItemCount").textContent = data.cartItemCount;
+                })
+                .catch(error => {
+                    console.error("Fetch error:", error);
+                });
+        }
+    </script>
 }
 @section header {
 
@@ -100,7 +125,7 @@
                     </div>
                     <div class="flex-fill pl-3">
                         <h6>@category.Name</h6>
-                        <small class="text-body">@category.Products.Count Products</small>
+                        <small class="text-body">@category.Products.Count @Resource.Products</small>
                     </div>
                 </div>
             </a>
@@ -121,7 +146,7 @@
                     <div class="card-image-container justify-content-center product-img position-relative overflow-hidden d-flex align-items-center">
                         <img class="img-fluid w-100" src="@feat.MainImage?.Url()" alt="">
                     <div class="product-action">
-                            <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-shopping-cart"></i></a>
+                            <a class="btn btn-outline-dark btn-square add-to-cart-button" onclick="addToCart(@feat.Id)"><i class="fa fa-shopping-cart"></i></a>
                             <a class="btn btn-outline-dark btn-square" href="@Url.Action("ProductDetail", "Shop", new { id = feat.Id })"><i class="fa fa-search"></i></a>
                     </div>
                 </div>
@@ -170,7 +195,7 @@
                     <div class="card-image-container justify-content-center product-img position-relative overflow-hidden d-flex align-items-center">
                         <img class="img-fluid w-100" src="@product.MainImage?.Url()" alt="">
                         <div class="product-action">
-                            <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-shopping-cart"></i></a>
+                            <a class="btn btn-outline-dark btn-square add-to-cart-button" onclick="addToCart(@product.Id)"><i class="fa fa-shopping-cart"></i></a>
                             <a class="btn btn-outline-dark btn-square" href="@Url.Action("ProductDetail", "Shop", new { id = product.Id })"><i class="fa fa-search"></i></a>
 
                         </div>
@@ -210,7 +235,6 @@
         }
     </div>
 </div>
-
 
 @section footer {
 
