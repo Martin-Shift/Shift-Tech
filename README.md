@@ -2,7 +2,7 @@
 
 Welcome to the Awesome E-Commerce Store! We offer a wide range of products to meet your shopping needs.
 
-![E-Commerce Store Logo](/Shift_Tech/img/wwwroot/img/small-logo.png)
+![Logo](/Shift%20Tech/wwwroot/img/small-logo.png)
 
 ## :rocket: How to Get Started
 1. Clone this repository to your local machine.
@@ -24,4 +24,17 @@ This project is licensed under the [Html Codex Licence](LICENSE.md).
 
 ## :house: Main Page
 
-```html
+![Main Page](/Shift%20Tech/wwwroot/img/Home-1.png)
+![Main Page 2](/Shift%20Tech/wwwroot/img/Home-2.png)
+
+## 🛒 Shop Page
+
+![Shop Page](/Shift%20Tech/wwwroot/img/Shop.png)
+
+## 🛍️ Product Detail Page
+
+![Shop Page](/Shift%20Tech/wwwroot/img/Product-Detail.png)
+
+## :bust_in_silhouette: Profile Page
+
+![Profile Page](/Shift%20Tech/wwwroot/img/Profile.png)
