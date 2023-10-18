@@ -384,6 +384,9 @@
   <data name="LoginOrEmail" xml:space="preserve">
     <value>Логін або Пошта</value>
   </data>
+  <data name="LoginWithGoogle" xml:space="preserve">
+    <value>Увійти з Google</value>
+  </data>
   <data name="Logout" xml:space="preserve">
     <value>Вийти</value>
   </data>
@@ -512,6 +515,9 @@
   </data>
   <data name="RecentProducts" xml:space="preserve">
     <value>Нові Продукти</value>
+  </data>
+  <data name="RegisterWithGoogle" xml:space="preserve">
+    <value>Зареєструватися з Google</value>
   </data>
   <data name="Remove" xml:space="preserve">
     <value>Видалити</value>

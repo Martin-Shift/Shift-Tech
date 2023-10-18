@@ -5,7 +5,7 @@
     ViewData["Title"] = "Login";
 }
 @section styles{
- 
+
 
 }
 @using Resources;
@@ -14,27 +14,38 @@
     <div class="row justify-content-center">
         <div class="col-md-4">
             <h2 class="mt-5 mb-3">@Resource.SignIn</h2>
-            <form id="login-form" method="post">
-                <div asp-validation-summary="All" class="text-danger"></div>
-                <div class="mb-3">
-                    <label for="LoginOrEmail" class="form-label">@Resource.LoginOrEmail</label>
-                    <input type="text" id="LoginOrEmail" name="LoginOrEmail" class="form-control" asp-for="LoginOrEmail" required autofocus>
-                </div>
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="mb-3">
+                <label for="LoginOrEmail" class="form-label">@Resource.LoginOrEmail</label>
+                <input type="text" id="LoginOrEmail" name="LoginOrEmail" class="form-control" asp-for="LoginOrEmail" required autofocus>
+            </div>
 
-                <div class="mb-3">
-                    <label for="Password" class="form-label">@Resource.Password</label>
-                    <input type="password" id="Password" name="Password" class="form-control" asp-for="Password" required>
+            <div class="mb-3">
+                <label for="Password" class="form-label">@Resource.Password</label>
+                <input type="password" id="Password" name="Password" class="form-control" asp-for="Password" required>
+            </div>
+            <div class="mb-3">
+                <button type="button" class="btn btn-primary" id="login-button">@Resource.SignIn</button>
+            </div>
+            <div class="mb-3">
+                <div class="row">
+                    <form method="post" action="/GoogleLogin">
+                        <div class="row">
+
+                            <button type="submit" class="btn btn-outline-dark" role="button" style="text-transform:none">
+                                <img width="20px" style="margin-bottom:3px; margin-right:5px" alt="Google sign-in" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png" />
+                               @Resource.LoginWithGoogle
+                            </button>
+                        </div>
+                    </form>
                 </div>
-                <div class="mb-3">
-                    <button type="button" class="btn btn-primary" id="login-button">@Resource.SignIn</button>
-                </div>
-            </form>
+            </div>
             <p class="mb-0">@Resource.Newhere<a href="@Url.Action("Register")" class="btn btn-link"><i>@Resource.SignUp</i></a></p>
         </div>
     </div>
 </div>
 @section Scripts{
-    
+
 }
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>

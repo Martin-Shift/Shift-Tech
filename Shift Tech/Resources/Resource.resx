@@ -384,6 +384,9 @@
   <data name="LoginOrEmail" xml:space="preserve">
     <value>Login Or Email</value>
   </data>
+  <data name="LoginWithGoogle" xml:space="preserve">
+    <value>Login with Google</value>
+  </data>
   <data name="Logout" xml:space="preserve">
     <value>Sign out</value>
   </data>
@@ -512,6 +515,9 @@
   </data>
   <data name="RecentProducts" xml:space="preserve">
     <value>Recent Products</value>
+  </data>
+  <data name="RegisterWithGoogle" xml:space="preserve">
+    <value>Register with Google</value>
   </data>
   <data name="Remove" xml:space="preserve">
     <value>Remove</value>

@@ -55,7 +55,12 @@ namespace Shift_Tech.Models.Startup
             })
             .AddEntityFrameworkStores<ShopDbContext>()
             .AddDefaultTokenProviders();
-
+            services.AddAuthentication()
+         .AddGoogle(options =>
+         {
+             options.ClientId = "733461572156-9dv5q5pi0t98i2lqnr1i1pe3gge76dba.apps.googleusercontent.com";
+             options.ClientSecret = "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";
+         });
             services.AddControllersWithViews()
                 .AddViewLocalization();
             services.AddSession(options =>

@@ -862,6 +862,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Login with Google.
+        /// </summary>
+        public static string LoginWithGoogle {
+            get {
+                return ResourceManager.GetString("LoginWithGoogle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Sign out.
         /// </summary>
         public static string Logout {
@@ -1245,6 +1254,15 @@ namespace Resources {
         public static string RecentProducts {
             get {
                 return ResourceManager.GetString("RecentProducts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Register with Google.
+        /// </summary>
+        public static string RegisterWithGoogle {
+            get {
+                return ResourceManager.GetString("RegisterWithGoogle", resourceCulture);
             }
         }
         

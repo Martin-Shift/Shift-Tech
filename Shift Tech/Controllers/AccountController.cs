@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Shift_Tech.DbModels;
 using Shift_Tech.Models.Account;
+using System.Security.Claims;
 
 namespace Shift_Tech.Controllers
 {
@@ -33,7 +34,23 @@ namespace Shift_Tech.Controllers
         {
             return View();
         }
+        public string GetFirstPartOfEmail(string email)
+        {
 
+            if (email != null)
+            {
+                string[] emailParts = email.Split('@');
+
+                if (emailParts.Length >= 1)
+                {
+                    // The first part of the email is in emailParts[0]
+                    string firstPartOfEmail = emailParts[0];
+
+                    return firstPartOfEmail;
+                }
+            }
+            return "";
+        }
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] RegisterModel model)
@@ -264,5 +281,43 @@ namespace Shift_Tech.Controllers
             return BadRequest(new { Message = "Invalid model state" });
         }
 
+        [HttpPost("GoogleLogin")]
+        [AllowAnonymous]
+        public IActionResult GoogleLogin()
+        {
+            var redirectUrl = Url.Action("GoogleLoginCallback", "Account", null, protocol: HttpContext.Request.Scheme);
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties("Google", redirectUrl);
+            return Challenge(properties, "Google");
+        }
+
+        [HttpGet("GoogleLoginCallback")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GoogleLoginCallback()
+        {
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+            {
+                return RedirectToAction("Login");
+            }
+            var user = await _userManager.FindByEmailAsync(info.Principal.FindFirstValue(ClaimTypes.Email));
+            var login = GetFirstPartOfEmail(info.Principal.FindFirstValue(ClaimTypes.Email));
+            if (user == null)
+            {
+                user = new User
+                {
+                    UserName = login,
+                    Email = info.Principal.FindFirstValue(ClaimTypes.Email),
+                    VisibleName = info.Principal.FindFirstValue(ClaimTypes.Name)
+                };
+                var result = await _userManager.CreateAsync(user);
+                if (!result.Succeeded)
+                {
+                    return RedirectToAction("Login");
+                }
+            }
+            await _signInManager.SignInAsync(user, isPersistent: false);
+
+            return RedirectToAction("Index", "Shop");
+        }
     }
 }
