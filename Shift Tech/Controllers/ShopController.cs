@@ -104,6 +104,7 @@ namespace Shift_Tech.Controllers
             return new PriceRange() { StartPrice = (int)Math.Floor(products.Min(x => x.Price)), EndPrice = (int)Math.Floor(products.Max(x => x.Price)) };
 
         }
+
         //Home page
         public async Task<IActionResult> Index()
         {
@@ -144,6 +145,7 @@ namespace Shift_Tech.Controllers
             var sameProducts = GetProducts().Where(x => x.Category == product.Category).Where(x => x.Id != productId).OrderByDescending(x => x.Purchases.Count).Take(6).ToList();
             return View("ProductDetail", new { Product = product, SameProducts = sameProducts });
         }
+
         //Review
         [HttpPost]
         public async Task<IActionResult> AddReview([FromBody] AddReviewModel reviewModel)
@@ -162,6 +164,7 @@ namespace Shift_Tech.Controllers
             _context.SaveChanges();
             return Ok(new { Message = "Success!" });
         }
+
         //Cart
         [HttpGet]
         public async Task<IActionResult> GetTopListCategories()
@@ -270,6 +273,8 @@ namespace Shift_Tech.Controllers
 
             return View(cart);
         }
+
+        //Product List
         [HttpGet]
         public async Task<IActionResult> ProductList()
         {
@@ -282,6 +287,19 @@ namespace Shift_Tech.Controllers
                 PriceRange = GetPriceRange(products)
             };
             return View(viewModel);
+        }
+        [HttpGet("/Shop/CategoryProductList/{categoryId}")]
+        public async Task<IActionResult> CategoryProductList(int categoryId)
+        {
+            var products = await GetProducts().Where(x=> x.Category.Id == categoryId).Take(9).ToListAsync();
+            var viewModel = new ProductListViewModel
+            {
+                Products = products,
+                Categories = await GetShopListCategories(),
+                SelectedCategories = new List<Category>() { GetCategories().First(x => x.Id == categoryId) },
+                PriceRange = GetPriceRange(products)
+            };
+            return View("ProductList",viewModel);
         }
         [HttpPost]
         public async Task<IActionResult> FilterProducts([FromBody] SearchFilter filter)
@@ -321,22 +339,6 @@ namespace Shift_Tech.Controllers
             products = products.Skip((filter.Page - 1) * 9)
             .Take(9);
             return PartialView("_ProductListPartial", await products.ToListAsync());
-        }
-        [HttpPost]
-        public IActionResult SetLanguage([FromBody] string culture)
-        {
-            Response.Cookies.Append(
-                CookieRequestCultureProvider.DefaultCookieName,
-                CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)),
-                new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) }
-            );
-            if (Request.Cookies.TryGetValue("Culture", out string selectedCulture))
-            {
-                CultureInfo cultureInfo = new CultureInfo(selectedCulture);
-                System.Threading.Thread.CurrentThread.CurrentCulture = cultureInfo;
-                System.Threading.Thread.CurrentThread.CurrentUICulture = cultureInfo;
-            }
-            return RedirectToAction("Index");
         }
     }
 }

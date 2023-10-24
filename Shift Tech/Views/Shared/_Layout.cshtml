@@ -40,9 +40,9 @@ https://cdn.jsdelivr.net/npm/sweetalert2@11.7.31/dist/sweetalert2.min.css
             <div class="row bg-secondary py-1 px-xl-5">
                 <div class="col-lg-6 d-none d-lg-block">
                     <div class="d-inline-flex align-items-center h-100">
-                        <a class="text-body mr-3" href="">@Resource.About</a>
+                        <a class="text-body mr-3" href="/">@Resource.Home</a>
+                        <a class="text-body mr-3" href="/Shop/ProductList">@Resource.Shop</a>
                         <a class="text-body mr-3" href="/Contact">@Resource.Contact</a>
-                        <a class="text-body mr-3" href="">@Resource.Help</a>
                     </div>
                 </div>
                 <div class="col-lg-6 text-center text-lg-right">
@@ -332,7 +332,7 @@ https://cdn.jsdelivr.net/npm/sweetalert2@11.7.31/dist/sweetalert2.all.min.js
 
                     data.categories.forEach(function (category) {
                         var link = document.createElement("a");
-                        link.href = "#";
+                        link.href = `/Shop/CategoryProductList/${category.id}`;
                         link.className = "nav-item nav-link";
                         link.textContent = category.name;
 
